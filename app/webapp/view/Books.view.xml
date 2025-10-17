@@ -24,6 +24,12 @@
                                     width="300px"
                                     search=".onSearch"
                                     placeholder="Search books..."/>
+                                <Button
+                                    id="createBookBtn"
+                                    text="Create Book"
+                                    type="Emphasized"
+                                    icon="sap-icon://add"
+                                    press=".onOpenCreateDialog"/>
                             </OverflowToolbar>
                         </headerToolbar>
                         <columns>

@@ -1,5 +1,5 @@
 ### Read BOOKS
-GET http://localhost:4004/odata/v4/study
+GET http://localhost:4004/odata/v4/study/Books
 Accept: application/json
 
 ### Create a new Books entry
