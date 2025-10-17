@@ -1,0 +1,6 @@
+ID;title;stock;price;author_ID;createdAt;createdBy;modifiedAt;modifiedBy
+f93548bd-032f-4ddd-a37c-269085dd6c7d;Harry Potter and the Sorcerer's Stone;100;19.99;f93548bd-032f-4ddd-a37c-269085dd6c7d;2021-06-27T14:52:23Z;admin;2021-06-27T14:52:23Z;admin
+ab068fcd-b14f-4601-8a2e-936c0de5e20f;A Game of Thrones;200;29.99;ab068fcd-b14f-4601-8a2e-936c0de5e20f;2021-06-27T14:52:23Z;admin;2021-06-27T14:52:23Z;admin
+d3b93f3a-3839-49e2-9c80-03c61b422efe;Murder on the Orient Express;150;15.50;d3b93f3a-3839-49e2-9c80-03c61b422efe;2021-06-27T14:52:23Z;admin;2021-06-27T14:52:23Z;admin
+1e2da6ee-d0f5-45d5-9cea-5a3b2c53064b;The Hobbit;250;12.99;1e2da6ee-d0f5-45d5-9cea-5a3b2c53064b;2021-06-27T14:52:23Z;admin;2021-06-27T14:52:23Z;admin
+ca1fd194-0245-4e2e-9a66-32ffd5521eab;Foundation;300;10.99;ca1fd194-0245-4e2e-9a66-32ffd5521eab;2021-06-27T14:52:23Z;admin;2021-06-27T14:52:23Z;admin

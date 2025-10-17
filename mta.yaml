@@ -1,0 +1,126 @@
+_schema-version: 3.3.0
+ID: Study
+version: 1.0.0
+description: "A simple CAP project."
+parameters:
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm install
+        - npx cds build --production
+
+modules:
+  - name: Study-srv
+    type: nodejs
+    path: gen/srv
+    parameters:
+      instances: 1
+      buildpack: nodejs_buildpack
+    build-parameters:
+      builder: npm-ci
+    provides:
+      - name: srv-api
+        properties:
+          srv-url: ${default-url}
+    requires:
+      - name: Study-auth
+      - name: Study-db
+
+  - name: Study-db-deployer
+    type: hdb
+    path: gen/db
+    parameters:
+      buildpack: nodejs_buildpack
+    requires:
+      - name: Study-db
+
+  - name: Study-approuter
+    type: approuter.nodejs
+    path: approuter
+    build-parameters:
+      ignore:
+        [
+          "default-env.json",
+          ".cdsrc-private.json",
+          "node_modules/",
+          "package-lock.json",
+        ]
+      builder: custom
+      commands: []
+    parameters:
+      keep-existing-routes: true
+      disk-quota: 1024MB
+      memory: 1024MB
+    requires:
+      - name: Study-auth
+      - name: Study-html-repo-rt
+      - name: srv-api
+        group: destinations
+        properties:
+          forwardAuthToken: true
+          strictSSL: false
+          url: "~{srv-url}"
+
+  - name: Study-app-deployer
+    type: com.sap.application.content
+    path: .
+    requires:
+      - name: Study-html-repo-host
+        parameters:
+          content-target: true
+    build-parameters:
+      build-result: resources
+      requires:
+        - artifacts:
+            - Study-app-content.zip
+          name: Study-app
+          target-path: resources/
+
+  - name: Study-app
+    type: html5
+    path: app
+    build-parameters:
+      ignore:
+        [
+          "default-env.json",
+          ".cdsrc-private.json",
+          "node_modules/",
+          "package-lock.json",
+        ]
+      builder: custom
+      build-result: dist
+      commands:
+        - npm install
+        - npm run build
+      supported-platforms: []
+
+resources:
+  - name: Study-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        xsappname: Study-${org}-${space}
+        tenant-mode: dedicated
+
+  - name: Study-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared
+
+  - name: Study-html-repo-rt
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-runtime
+
+  - name: Study-html-repo-host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-host

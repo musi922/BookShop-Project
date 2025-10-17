@@ -1,0 +1,18 @@
+### Read BOOKS
+GET http://localhost:4004/odata/v4/study
+Accept: application/json
+
+### Create a new Books entry
+POST http://localhost:4004/odata/v4/study/Books
+Content-Type: application/json
+
+{
+      "title": "Rich Kid",
+      "stock": 100,
+      "price": 19.99,
+      "author_ID": "f93548bd-032f-4ddd-a37c-269085dd6c7d"
+}
+
+###
+GET http://localhost:4004/odata/v4/study
+Accept: application/json
