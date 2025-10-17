@@ -19,6 +19,18 @@
                             <OverflowToolbar>
                                 <Title id="title" text="Books"/>
                                 <ToolbarSpacer/>
+                                <Button
+                                    id="filterBtn"
+                                    icon="sap-icon://filter"
+                                    text="Filter"
+                                    tooltip="Filter Books"
+                                    press=".onOpenFilter"/>
+                                <Button
+                                    id="sortBtn"
+                                    icon="sap-icon://sort"
+                                    text="Sort"
+                                    tooltip="Sort Books"
+                                    press=".onOpenSort"/>
                                 <SearchField
                                     id="searchField"
                                     width="300px"
@@ -32,6 +44,22 @@
                                     press=".onOpenCreateDialog"/>
                             </OverflowToolbar>
                         </headerToolbar>
+                        <infoToolbar>
+                            <OverflowToolbar
+                                id="filterInfoToolbar"
+                                visible="false">
+                                <Label 
+                                    id="filterLabel"
+                                    text=""/>
+                                <ToolbarSpacer/>
+                                <Button
+                                    id="clearFiltersBtn"
+                                    icon="sap-icon://clear-filter"
+                                    text="Clear All"
+                                    type="Transparent"
+                                    press=".onClearAll"/>
+                            </OverflowToolbar>
+                        </infoToolbar>
                         <columns>
                             <Column width="12em">
                                 <Text text="Book Title"/>

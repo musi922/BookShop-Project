@@ -1,0 +1,35 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <ViewSettingsDialog
+        id="sortDialog"
+        confirm=".onConfirmSort"
+        title="Sort Books">
+        
+        <!-- Sort Items -->
+        <sortItems>
+            <ViewSettingsItem
+                text="Title (A-Z)"
+                key="title"
+                selected="true"/>
+            <ViewSettingsItem
+                text="Title (Z-A)"
+                key="title_desc"/>
+            <ViewSettingsItem
+                text="Price (Low to High)"
+                key="price_asc"/>
+            <ViewSettingsItem
+                text="Price (High to Low)"
+                key="price_desc"/>
+            <ViewSettingsItem
+                text="Stock (Low to High)"
+                key="stock_asc"/>
+            <ViewSettingsItem
+                text="Stock (High to Low)"
+                key="stock_desc"/>
+            <ViewSettingsItem
+                text="Author Name"
+                key="author_name"/>
+        </sortItems>
+    </ViewSettingsDialog>
+</core:FragmentDefinition>

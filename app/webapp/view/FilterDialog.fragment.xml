@@ -1,0 +1,56 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <ViewSettingsDialog
+        id="filterDialog"
+        confirm=".onConfirmFilter"
+        reset=".onResetFilter"
+        title="Filter Books">
+        
+        <filterItems>
+            <!-- Stock Level Filter -->
+            <ViewSettingsFilterItem
+                text="Stock Level"
+                key="stock"
+                multiSelect="true">
+                <items>
+                    <ViewSettingsItem
+                        text="High Stock (>200)"
+                        key="highStock"/>
+                    <ViewSettingsItem
+                        text="Medium Stock (100-200)"
+                        key="mediumStock"/>
+                    <ViewSettingsItem
+                        text="Low Stock (100)"
+                        key="lowStock"/>
+                </items>
+            </ViewSettingsFilterItem>
+            
+            <!-- Price Range Filter -->
+            <ViewSettingsFilterItem
+                text="Price Range"
+                key="price"
+                multiSelect="true">
+                <items>
+                    <ViewSettingsItem
+                        text="Budget ($20)"
+                        key="budget"/>
+                    <ViewSettingsItem
+                        text="Mid-range ($20-$50)"
+                        key="midrange"/>
+                    <ViewSettingsItem
+                        text="Premium (>$50)"
+                        key="premium"/>
+                </items>
+            </ViewSettingsFilterItem>
+            
+            <!-- Author Filter -->
+            <ViewSettingsFilterItem
+                text="Author"
+                key="author"
+                multiSelect="true">
+                <!-- Items will be populated dynamically from the model -->
+            </ViewSettingsFilterItem>
+        </filterItems>
+    </ViewSettingsDialog>
+</core:FragmentDefinition>
