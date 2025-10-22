@@ -1,0 +1,5 @@
+ID,createdAt,createdBy,modifiedAt,modifiedBy,title,message,type,isRead,priority,relatedEntity,relatedEntityId
+a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d,2024-10-20T09:15:30Z,system,2024-10-20T09:15:30Z,system,Low Stock Alert,Book "The Great Gatsby" is running low on stock (only 3 units remaining),warning,false,high,Books,f93548bd-032f-4ddd-a37c-269085dd6c7d
+b2c3d4e5-f6a7-5b6c-9d0e-1f2a3b4c5d6e,2024-10-19T14:22:15Z,system,2024-10-19T14:22:15Z,system,New Book Added,Book "Atomic Habits" has been added to the catalog,success,false,normal,Books,ab068fcd-b14f-4601-8a2e-936c0de5e20f
+c3d4e5f6-a7b8-6c7d-0e1f-2a3b4c5d6e7f,2024-10-18T11:45:00Z,system,2024-10-20T08:30:00Z,system,Price Update Required,Please review pricing for books in the catalog,info,true,low,Books,d3b93f3a-3839-49e2-9c80-03c61b422efe
+d4e5f6a7-b8c9-7d8e-1f2a-3b4c5d6e7f8a,2024-10-21T07:00:00Z,system,2024-10-21T07:00:00Z,system,System Maintenance,Scheduled maintenance will occur tonight at 11 PM EST,error,false,urgent,1e2da6ee-d0f5-45d5-9cea-5a3b2c53064b

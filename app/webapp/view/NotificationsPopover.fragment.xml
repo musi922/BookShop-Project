@@ -1,0 +1,75 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <Popover
+        id="notificationsPopover"
+        class="sapUiContentPadding"
+        placement="Bottom"
+        title="Notifications ({notificationModel>/unreadCount})"
+        contentWidth="400px"
+        contentHeight="500px"
+    >
+        <content>
+            <List
+                id="notificationsList"
+                items="{notificationModel>/notifications}"
+                noDataText="No notifications"
+                mode="None"
+            >
+                <items>
+                    <NotificationListItem
+                        title="{notificationModel>title}"
+                        description="{notificationModel>message}"
+                        datetime="{
+                            path: 'notificationModel>createdAt',
+                            type: 'sap.ui.model.type.DateTime',
+                            formatOptions: {
+                                style: 'medium',
+                                relative: true
+                            }
+                        }"
+                        priority="{
+                            path: 'notificationModel>priority',
+                            formatter: '.formatNotificationPriority'
+                        }"
+                        unread="{= !${notificationModel>isRead} }"
+                        press=".onNotificationPress"
+                        close=".onNotificationClose"
+                        showCloseButton="true"
+                    >
+                        <customData>
+                            <core:CustomData 
+                                key="notificationId" 
+                                value="{notificationModel>ID}"
+                            />
+                            <core:CustomData 
+                                key="relatedEntityId" 
+                                value="{notificationModel>relatedEntityId}"
+                            />
+                            <core:CustomData 
+                                key="relatedEntity" 
+                                value="{notificationModel>relatedEntity}"
+                            />
+                        </customData>
+                    </NotificationListItem>
+                </items>
+            </List>
+        </content>
+        <footer>
+            <Toolbar>
+                <ToolbarSpacer />
+                <Button
+                    text="Mark All as Read"
+                    press=".onMarkAllAsRead"
+                    enabled="{= ${notificationModel>/unreadCount} > 0 }"
+                />
+                <Button
+                    text="Clear All"
+                    press=".onClearAllNotifications"
+                    type="Transparent"
+                />
+            </Toolbar>
+        </footer>
+    </Popover>
+</core:FragmentDefinition>

@@ -1,110 +1,168 @@
-<mvc:View 
+<mvc:View xmlns:internal="sap.landvisz.internal"
     controllerName="com.study.controller.Books"
-    xmlns:mvc="sap.ui.core.mvc" 
-    xmlns="sap.m">
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:smartTable="sap.ui.comp.smarttable"
+    xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
+    xmlns:unified="sap.ui.unified"
+    xmlns="sap.m"
+    height="100%"
+    xmlns:core = "sap.ui.core"
+>
     <App id="apps">
         <pages>
-            <Page id="page" title="{i18n>title}">
+            <Page
+                id="page"
+                title="{i18n>title}"
+            >
+            <headerContent>
+                    <Button
+                        id="notificationBtn"
+                        icon="sap-icon://bell"
+                        type="Transparent"
+                        press=".onOpenNotifications"
+                        tooltip="Notifications"
+                    >
+                        <customData>
+                            <core:CustomData 
+                                key="badge" 
+                                value="{notificationModel>/unreadCount}"
+                                writeToDom="true"
+                            />
+                        </customData>
+                    </Button>
+                </headerContent>
+            
                 <content>
-                    <Table 
-                        id="booksTable"
-                        items="{
-                            path: '/Books',
-                            parameters: {
-                                $expand: 'author'
-                            }
-                        }" 
-                        ariaLabelledBy="title">
-                        <headerToolbar>
-                            <OverflowToolbar>
-                                <Title id="title" text="Books"/>
-                                <ToolbarSpacer/>
-                                <Button
-                                    id="filterBtn"
-                                    icon="sap-icon://filter"
-                                    text="Filter"
-                                    tooltip="Filter Books"
-                                    press=".onOpenFilter"/>
-                                <Button
-                                    id="sortBtn"
-                                    icon="sap-icon://sort"
-                                    text="Sort"
-                                    tooltip="Sort Books"
-                                    press=".onOpenSort"/>
-                                <SearchField
-                                    id="searchField"
-                                    width="300px"
-                                    search=".onSearch"
-                                    placeholder="Search books..."/>
-                                <Button
-                                    id="createBookBtn"
-                                    text="Create Book"
-                                    type="Emphasized"
-                                    icon="sap-icon://add"
-                                    press=".onOpenCreateDialog"/>
-                            </OverflowToolbar>
-                        </headerToolbar>
-                        <infoToolbar>
-                            <OverflowToolbar
-                                id="filterInfoToolbar"
-                                visible="false">
-                                <Label 
-                                    id="filterLabel"
-                                    text=""/>
-                                <ToolbarSpacer/>
-                                <Button
-                                    id="clearFiltersBtn"
-                                    icon="sap-icon://clear-filter"
-                                    text="Clear All"
-                                    type="Transparent"
-                                    press=".onClearAll"/>
-                            </OverflowToolbar>
-                        </infoToolbar>
-                        <columns>
-                            <Column width="12em">
-                                <Text text="Book Title"/>
-                            </Column>
-                            <Column 
-                                minScreenWidth="Tablet"
-                                demandPopin="true"
-                                hAlign="End"
-                                width="8em">
-                                <Text text="Stock"/>
-                            </Column>
-                            <Column 
-                                minScreenWidth="Tablet"
-                                demandPopin="true"
-                                hAlign="End"
-                                width="8em">
-                                <Text text="Price"/>
-                            </Column>
-                            <Column width="12em">
-                                <Text text="Author"/>
-                            </Column>
-                        </columns>
-                        <items>
-                            <ColumnListItem type="Navigation" press=".onItemPress">
-                                <cells>
-                                    <ObjectIdentifier 
-                                        title="{title}"
-                                        text="{ID}"/>
-                                    <ObjectNumber 
-                                        number="{stock}"
-                                        unit="pcs"/>
-                                    <ObjectNumber 
-                                        number="{
-                                            path: 'price',
-                                            type: 'sap.ui.model.type.Currency',
-                                            formatOptions: {
-                                                showMeasure: false
-                                            }
-                                        }"
-                                        unit="USD"/>
-                                    <Text text="{author/name}"/>
-                                </cells>
-                            </ColumnListItem>
-                        </items>
-                    </Table>
+                
+                    <VBox fitContainer="true">
+                        <!-- Smart Filter Bar -->
+                        <smartFilterBar:SmartFilterBar
+                            id="smartFilterBar"
+                            entitySet="Books"
+                            persistencyKey="SmartFilter_Books"
+                            considerAnalyticalParameters="true"
+                            enableBasicSearch="true"
+                            basicSearchFieldName="title"
+                        >
+                            <smartFilterBar:controlConfiguration>
+                                <smartFilterBar:ControlConfiguration
+                                    key="author_ID"
+                                    label="Author"
+                                    visibleInAdvancedArea="true"
+                                    preventInitialDataFetchInValueHelpDialog="false"
+                                />
+                                <smartFilterBar:ControlConfiguration
+                                    key="price"
+                                    label="Price"
+                                    visibleInAdvancedArea="true"
+                                />
+                                <smartFilterBar:ControlConfiguration
+                                    key="stock"
+                                    label="Stock"
+                                    visibleInAdvancedArea="true"
+                                />
+                            </smartFilterBar:controlConfiguration>
+                        </smartFilterBar:SmartFilterBar>
+
+                        <!-- Smart Table -->
+                        <smartTable:SmartTable
+                            id="booksSmartTable"
+                            entitySet="Books"
+                            smartFilterId="smartFilterBar"
+                            tableType="ResponsiveTable"
+                            useExportToExcel="true"
+                            useVariantManagement="true"
+                            useTablePersonalisation="true"
+                            header="Books"
+                            showRowCount="true"
+                            persistencyKey="SmartTable_Books"
+                            enableAutoBinding="true"
+                            class="sapUiResponsiveContentPadding"
+                            beforeRebindTable=".onBeforeRebindTable"
+                            initiallyVisibleFields="title,stock,price,author_ID"
+                        >
+                            <smartTable:customToolbar>
+                                <OverflowToolbar design="Transparent">
+                                    <ToolbarSpacer />
+                                    <Button
+                                        id="uploadBookBtn"
+                                        text="Upload Books"
+                                        icon="sap-icon://upload"
+                                        press=".onOpenUploadDialog"
+                                    />
+                                    <Button
+                                        id="createBookBtn"
+                                        text="Create Book"
+                                        type="Emphasized"
+                                        icon="sap-icon://add"
+                                        press=".onOpenCreateDialog"
+                                    />
+                                </OverflowToolbar>
+                            </smartTable:customToolbar>
+
+                            <!-- Define table structure -->
+                            <Table
+                                id="responsiveTable"
+                                mode="SingleSelectMaster"
+                                selectionChange=".onSelectionChange"
+                                growing="true"
+                                growingThreshold="20"
+                            >
+                                <columns>
+                                    <Column width="12em">
+                                        <Text text="Book Title" />
+                                    </Column>
+                                    <Column
+                                        minScreenWidth="Tablet"
+                                        demandPopin="true"
+                                        hAlign="End"
+                                        width="8em"
+                                    >
+                                        <Text text="Stock" />
+                                    </Column>
+                                    <Column
+                                        minScreenWidth="Tablet"
+                                        demandPopin="true"
+                                        hAlign="End"
+                                        width="8em"
+                                    >
+                                        <Text text="Price" />
+                                    </Column>
+                                    <Column width="12em">
+                                        <Text text="Author" />
+                                    </Column>
+                                </columns>
+                                <items>
+                                    <ColumnListItem
+                                        type="Navigation"
+                                        press=".onItemPress"
+                                    >
+                                        <cells>
+                                            <ObjectIdentifier
+                                                title="{title}"
+                                                text="{ID}"
+                                            />
+                                            <ObjectNumber
+                                                number="{stock}"
+                                                unit="pcs"
+                                            />
+                                            <ObjectNumber
+                                                number="{
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            path: 'price',
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                type: 'sap.ui.model.type.Currency',
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    formatOptions: {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            showMeasure: false
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }"
+                                                unit="USD"
+                                            />
+                                            <Text text="{author/name}" />
+                                        </cells>
+                                    </ColumnListItem>
+                                </items>
+                            </Table>
+                        </smartTable:SmartTable>
+                    </VBox>
                 </content>
             </Page>
         </pages>

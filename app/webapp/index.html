@@ -2,26 +2,45 @@
 <html>
 <head>
     <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        
-            <title>Study</title>     
-                <script
-                        id="sap-ui-bootstrap"
-                                src="https://sapui5.hana.ondemand.com/1.120.29/resources/sap-ui-core.js"
-                                        data-sap-ui-theme="sap_horizon"
-                                                data-sap-ui-resourceroots='{"com.study": "./"}'
-                                                        data-sap-ui-oninit="module:sap/ui/core/ComponentSupport"
-                                                                data-sap-ui-compatVersion="edge"
-                                                                        data-sap-ui-async="true"
-                                                                                data-sap-ui-frameOptions="trusted">
-                                                                                    </script>
-                                                                                    </head>
-                                                                                    <body class="sapUiBody">
-                                                                                        <div data-sap-ui-component 
-                                                                                                 data-name="com.study" 
-                                                                                                          data-id="container" 
-                                                                                                                   data-settings='{"id": "study"}'>
-                                                                                                                       </div>
-                                                                                                                       </body>
-                                                                                                                       </html>
-                                                                                                                       >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Study</title>
+    
+    <!-- XLSX Library for Excel files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <!-- PDF.js Library for PDF files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        // Configure PDF.js worker
+        if (typeof pdfjsLib !== 'undefined') {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
+    </script>
+    
+    <!-- Mammoth.js Library for Word documents (.docx) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    
+    <!-- Tesseract.js Library for OCR (Image processing) - Optional, only if you need image upload -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
+    
+    <!-- SAP UI5 -->
+    <script
+        id="sap-ui-bootstrap"
+        src="https://sapui5.hana.ondemand.com/1.120.29/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-resourceroots='{"com.study": "./"}'
+        data-sap-ui-oninit="module:sap/ui/core/ComponentSupport"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true"
+        data-sap-ui-frameOptions="trusted">
+    </script>
+</head>
+<body class="sapUiBody">
+    <div data-sap-ui-component 
+         data-name="com.study" 
+         data-id="container" 
+         data-settings='{"id": "study"}'>
+    </div>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:unified="sap.ui.unified">
+    <Dialog
+        id="uploadDialog"
+        title="Upload Files"
+        contentWidth="600px"
+        contentHeight="auto"
+        resizable="true"
+        draggable="true"
+        busy="{uploadModel>/uploading}"
+                busyIndicatorDelay="0">
+        <content>
+            <VBox class="sapUiSmallMargin">
+                <!-- File Type Selection -->
+                <Label text="Select Upload Type" class="sapUiTinyMarginBottom"/>
+                <SegmentedButton
+                    id="uploadTypeSegmented"
+                    selectedKey="{uploadModel>/uploadType}"
+                    select=".onUploadTypeChange">
+                    <items>
+                        <SegmentedButtonItem
+                            key="excel"
+                            icon="sap-icon://excel-attachment"
+                            text="Excel (Books)"/>
+                        <SegmentedButtonItem
+                            key="document"
+                            icon="sap-icon://document"
+                            text="Documents"/>
+                        <SegmentedButtonItem
+                            key="image"
+                            icon="sap-icon://camera"
+                            text="Images"/>
+                    </items>
+                </SegmentedButton>
+
+                <VBox class="sapUiMediumMarginTop">
+                    <!-- Upload Instructions -->
+                    <MessageStrip
+                        text="{uploadModel>/instructions}"
+                        type="Information"
+                        showIcon="true"
+                        class="sapUiTinyMarginBottom"/>
+
+                    <!-- File Uploader -->
+                    <unified:FileUploader
+                        id="fileUploader"
+                        name="file"
+                        uploadUrl="{uploadModel>/uploadUrl}"
+                        multiple="{uploadModel>/allowMultiple}"
+                        fileType="{uploadModel>/allowedTypes}"
+                        mimeType="{uploadModel>/mimeTypes}"
+                        maximumFileSize="{uploadModel>/maxFileSize}"
+                        placeholder="Choose a file..."
+                        buttonText="Browse"
+                        change=".onFileChange"
+                        uploadComplete=".onUploadComplete"
+                        typeMissmatch=".onTypeMismatch"
+                        fileSizeExceed=".onFileSizeExceed"
+                        width="100%"
+                        class="sapUiSmallMarginTop"/>
+
+                    <!-- File Information -->
+                    <VBox
+                        visible="{uploadModel>/hasFiles}"
+                        class="sapUiSmallMarginTop">
+                        <Label text="Selected Files:" class="sapUiTinyMarginBottom"/>
+                        <List
+                            id="fileList"
+                            items="{uploadModel>/files}"
+                            noDataText="No files selected">
+                            <StandardListItem
+                                title="{uploadModel>name}"
+                                description="{uploadModel>size}"
+                                icon="{uploadModel>icon}"
+                                type="Active"
+                                press=".onRemoveFile">
+                                <customData>
+                                    <core:CustomData
+                                        key="fileIndex"
+                                        value="{uploadModel>index}"/>
+                                </customData>
+                            </StandardListItem>
+                        </List>
+                    </VBox>
+
+                    <!-- Progress Bar -->
+                    <VBox
+                        visible="{uploadModel>/uploading}"
+                        class="sapUiMediumMarginTop">
+                        <Label text="Upload Progress" class="sapUiTinyMarginBottom"/>
+                        <ProgressIndicator
+                            percentValue="{uploadModel>/uploadProgress}"
+                            displayValue="{uploadModel>/uploadProgressText}"
+                            state="Information"
+                            showValue="true"/>
+                    </VBox>
+
+                    <!-- Upload Results -->
+                    <VBox
+                        visible="{uploadModel>/showResults}"
+                        class="sapUiMediumMarginTop">
+                        <MessageStrip
+                            text="{uploadModel>/resultMessage}"
+                            type="{uploadModel>/resultType}"
+                            showIcon="true"
+                            showCloseButton="true"/>
+                    </VBox>
+
+                    <!-- Excel Preview for Books -->
+                    <VBox
+                        visible="{= ${uploadModel>/uploadType} === 'excel' &amp;&amp; ${uploadModel>/previewData}.length > 0}"
+                        class="sapUiMediumMarginTop">
+                        <Label text="Preview (First 5 rows):" class="sapUiTinyMarginBottom"/>
+                        <Table
+                            id="previewTable"
+                            items="{uploadModel>/previewData}"
+                            width="100%">
+                            <columns>
+                                <Column><Text text="Title"/></Column>
+                                <Column><Text text="Author ID"/></Column>
+                                <Column><Text text="Price"/></Column>
+                                <Column><Text text="Stock"/></Column>
+                                <Column><Text text="Status"/></Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <Text text="{uploadModel>title}"/>
+                                        <Text text="{uploadModel>author_ID}"/>
+                                        <Text text="{uploadModel>price}"/>
+                                        <Text text="{uploadModel>stock}"/>
+                                        <ObjectStatus
+                                            text="{uploadModel>status}"
+                                            state="{uploadModel>statusState}"/>
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </VBox>
+                </VBox>
+            </VBox>
+        </content>
+        <beginButton>
+            <Button
+                text="{uploadModel>/uploadButtonText}"
+                type="Emphasized"
+                icon="sap-icon://upload"
+                press=".onStartUpload"
+                enabled="{= ${uploadModel>/hasFiles} &amp;&amp; !${uploadModel>/uploading}}"/>
+        </beginButton>
+        <endButton>
+            <Button
+                text="Close"
+                press=".onCloseUploadDialog"/>
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

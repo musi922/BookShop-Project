@@ -41,14 +41,13 @@ modules:
     path: approuter
     build-parameters:
       ignore:
-        [
-          "default-env.json",
-          ".cdsrc-private.json",
-          "node_modules/",
-          "package-lock.json",
-        ]
+        - "default-env.json"
+        - ".cdsrc-private.json"
+        - "node_modules/"
+        - "package-lock.json"
       builder: custom
-      commands: []
+      commands:
+        []
     parameters:
       keep-existing-routes: true
       disk-quota: 1024MB
@@ -83,18 +82,17 @@ modules:
     path: app
     build-parameters:
       ignore:
-        [
-          "default-env.json",
-          ".cdsrc-private.json",
-          "node_modules/",
-          "package-lock.json",
-        ]
+        - "default-env.json"
+        - ".cdsrc-private.json"
+        - "node_modules/"
+        - "package-lock.json"
       builder: custom
       build-result: dist
       commands:
         - npm install
         - npm run build
-      supported-platforms: []
+      supported-platforms:
+        []
 
 resources:
   - name: Study-auth

@@ -1,18 +1,59 @@
-### Read BOOKS
-GET http://localhost:4004/odata/v4/study/Books
+### Read all Books (OData V2)
+GET http://localhost:4004/odata/v2/study/Books
 Accept: application/json
 
-### Create a new Books entry
-POST http://localhost:4004/odata/v4/study/Books
+### Read Books with Author expanded (OData V2)
+GET http://localhost:4004/odata/v2/study/Books?$expand=author
+Accept: application/json
+
+### Create a new Book (OData V2)
+POST http://localhost:4004/odata/v2/study/Books
 Content-Type: application/json
 
 {
-      "title": "Rich Kid",
-      "stock": 100,
-      "price": 19.99,
-      "author_ID": "f93548bd-032f-4ddd-a37c-269085dd6c7d"
+  "title": "Rich Dad Poor Dad",
+  "stock": 100,
+  "price": "19.99",
+  "author_ID": "f93548bd-032f-4ddd-a37c-269085dd6c7d"
 }
 
-###
-GET http://localhost:4004/odata/v4/study
+### Read all Authors (OData V2)
+GET http://localhost:4004/odata/v2/study/Authors
+Accept: application/json
+
+### Create a new Author (OData V2)
+POST http://localhost:4004/odata/v2/study/Authors
+Content-Type: application/json
+
+{
+  "name": "Robert Kiyosaki",
+  "country": "USA"
+}
+
+
+### Get all Notifications (OData V2)
+GET http://localhost:4004/odata/v2/study/Notifications
+Accept: application/json
+
+### Create a manual Notification
+POST http://localhost:4004/odata/v2/study/Notifications
+Content-Type: application/json
+
+{
+  "title": "Test Notification",
+  "message": "This is a test notification message",
+  "type": "info",
+  "priority": "normal",
+  "isRead": false
+}
+
+### Mark Notification as read (PATCH)
+PATCH http://localhost:4004/odata/v2/study/Notifications('a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d')
+Content-Type: application/json
+
+{
+  "isRead": true
+}
+### Get unread notification count (Custom function)
+GET http://localhost:4004/odata/v2/study/getUnreadNotificationCount
 Accept: application/json
