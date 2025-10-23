@@ -20,8 +20,7 @@
                         icon="sap-icon://bell"
                         type="Transparent"
                         press=".onOpenNotifications"
-                        tooltip="Notifications"
-                    >
+                        tooltip="Notifications">
                         <customData>
                             <core:CustomData 
                                 key="badge" 
@@ -30,10 +29,14 @@
                             />
                         </customData>
                     </Button>
-                </headerContent>
+                <Button 
+                    text="Authors" 
+                    press="onAuthorNavigate"
+                    type="Emphasized"
+                />
+            </headerContent>
             
                 <content>
-                
                     <VBox fitContainer="true">
                         <!-- Smart Filter Bar -->
                         <smartFilterBar:SmartFilterBar
@@ -106,7 +109,7 @@
                                 mode="SingleSelectMaster"
                                 selectionChange=".onSelectionChange"
                                 growing="true"
-                                growingThreshold="20"
+                                growingThreshold="7"
                             >
                                 <columns>
                                     <Column width="12em">

@@ -1,0 +1,44 @@
+<mvc:View xmlns:smarttable="sap.ui.comp.smarttable"
+    xmlns:filterbar="sap.ui.comp.filterbar"
+    xmlns:smartfilterbar="sap.ui.comp.smartfilterbar"
+    controllerName="com.study.controller.Authors"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+>
+    <Page
+        id="Authors"
+        title="Authors Page"
+    >
+        <content>
+            <VBox fitContainer="true">
+                <smartfilterbar:SmartFilterBar
+                    id="smartFilterBarId"
+                    enableBasicSearch="true"
+                    basicSearchFieldName="name"
+                    entitySet="Authors"
+                    considerAnalyticalParameters="true"
+                    persistencyKey="SmartFilter_Authors"
+                >
+                    <smartfilterbar:controlConfiguration>
+                        <smartfilterbar:ControlConfiguration
+                            key="name"
+                            label="Name"
+                            visibleInAdvancedArea="true"
+                        />
+                    </smartfilterbar:controlConfiguration>
+                </smartfilterbar:SmartFilterBar>
+                <smarttable:SmartTable
+                id="smartTable" 
+                smartFilterId="smartFilterBarId"
+                entitySet="Authors"
+                tableType="ResponsiveTable"
+                header="Authors"
+                enableAutoBinding="true"
+                useExportToExcel="true"
+                useVariantManagement="true"
+                useTablePersonalisation="true"
+                ></smarttable:SmartTable>
+            </VBox>
+        </content>
+    </Page>
+</mvc:View>

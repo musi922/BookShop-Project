@@ -42,6 +42,11 @@ sap.ui.define([
                 }.bind(this));
             }
         },
+        onAuthorNavigate: function () {
+            var oRouter = this.getOwnerComponent().getRouter();
+            oRouter.navTo("authors")
+        },
+
 
         _startNotificationRefresh: function() {
             // Set up auto-refresh for notifications every 30 seconds

@@ -81,6 +81,11 @@
           "name": "bookDetail",
           "pattern": "Books/{bookId}",
           "target": ["TargetBookDetail"]
+        },
+        {
+          "name": "authors",
+          "pattern": "Authors",
+          "target": ["TargetAuthors"]
         }
       ],
       "targets": {
@@ -93,6 +98,11 @@
           "viewType": "XML",
           "viewId": "BookDetail",
           "viewName": "BookDetail"
+        },
+        "TargetAuthors": {
+          "viewType": "XML",
+          "viewId": "Authors",
+          "viewName": "Authors"
         }
       }
     }
