@@ -11,6 +11,7 @@
     >
         <content>
             <VBox fitContainer="true">
+                <!-- Smart Filter Bar -->
                 <smartfilterbar:SmartFilterBar
                     id="smartFilterBarId"
                     enableBasicSearch="true"
@@ -27,17 +28,72 @@
                         />
                     </smartfilterbar:controlConfiguration>
                 </smartfilterbar:SmartFilterBar>
+
+                <!-- Smart Table -->
                 <smarttable:SmartTable
-                id="smartTable" 
-                smartFilterId="smartFilterBarId"
-                entitySet="Authors"
-                tableType="ResponsiveTable"
-                header="Authors"
-                enableAutoBinding="true"
-                useExportToExcel="true"
-                useVariantManagement="true"
-                useTablePersonalisation="true"
-                ></smarttable:SmartTable>
+                    id="smartTable" 
+                    smartFilterId="smartFilterBarId"
+                    entitySet="Authors"
+                    tableType="ResponsiveTable"
+                    header="Authors"
+                    enableAutoBinding="true"
+                    useExportToExcel="false"
+                    useVariantManagement="false"
+                    useTablePersonalisation="false"
+                    showRowCount="false"
+                    beforeRebindTable=".onBeforeRebindTable"
+                    initialise=".onSmartTableInit"
+                    class="sapUiResponsiveContentPadding"
+                    initiallyVisibleFields="ID,name"
+                />
+                
+                <!-- Pagination Toolbar -->
+                <OverflowToolbar
+                    id="paginationToolbar"
+                    design="Transparent"
+                    class="sapUiTinyMarginTop"
+                >
+                    <ToolbarSpacer />
+                    <Text id="paginationInfo" text="0-0 of 0" class="sapUiTinyMarginEnd" />
+                    <Button
+                        id="firstPageBtn"
+                        icon="sap-icon://close-command-field"
+                        press=".onFirstPage"
+                        tooltip="First Page"
+                        enabled="false"
+                    />
+                    <Button
+                        id="previousPageBtn"
+                        icon="sap-icon://navigation-left-arrow"
+                        press=".onPreviousPage"
+                        tooltip="Previous Page"
+                        enabled="false"
+                    />
+                    <Label text="Page" class="sapUiTinyMarginBegin sapUiTinyMarginEnd" />
+                    <Input
+                        id="currentPageInput"
+                        type="Number"
+                        value="1"
+                        width="4rem"
+                        textAlign="Center"
+                        submit=".onPageInputSubmit"
+                    />
+                    <Text id="totalPagesText" text="of 1" class="sapUiTinyMarginBegin sapUiTinyMarginEnd" />
+                    <Button
+                        id="nextPageBtn"
+                        icon="sap-icon://navigation-right-arrow"
+                        press=".onNextPage"
+                        tooltip="Next Page"
+                        enabled="false"
+                    />
+                    <Button
+                        id="lastPageBtn"
+                        icon="sap-icon://open-command-field"
+                        press=".onLastPage"
+                        tooltip="Last Page"
+                        enabled="false"
+                    />
+                </OverflowToolbar>
             </VBox>
         </content>
     </Page>
