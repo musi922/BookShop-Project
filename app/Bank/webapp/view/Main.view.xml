@@ -1,0 +1,349 @@
+<mvc:View
+    controllerName="com.bank.controller.Main"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:l="sap.ui.layout"
+    xmlns:core="sap.ui.core"
+    xmlns:upload="sap.m.upload">
+    
+    <Page id="wizardPage" 
+          title="Funding Application"
+          showNavButton="false">
+        
+        <content>
+            <Wizard id="fundingWizard"
+                    complete="onWizardComplete"
+                    stepActivate="onStepActivate"
+                    class="sapUiResponsiveMargin">
+                
+                <!-- Step 1: Program Selection -->
+                <WizardStep id="programStep"
+                           title="Select Funding Program"
+                           validated="false">
+                    <l:VerticalLayout class="sapUiSmallMargin">
+                        <Label text="Choose a Funding Program" 
+                               labelFor="programSelect"
+                               class="sapUiTinyMarginTop"/>
+                        <Select id="programSelect"
+                               selectedKey="{/selectedProgram}"
+                               change="onProgramChange"
+                               width="100%"
+                               valueState="{/programValueState}"
+                               valueStateText="Please select a funding program"
+                               class="sapUiSmallMarginTop">
+                            <core:Item key="" text="Select a Program"/>
+                            <core:Item key="startup" text="Startup Funding Program"/>
+                            <core:Item key="innovation" text="Innovation Grant"/>
+                            <core:Item key="sme" text="SME Development Fund"/>
+                            <core:Item key="research" text="Research &amp; Development Grant"/>
+                        </Select>
+                        
+                        <VBox class="sapUiMediumMarginTop" visible="{= ${/selectedProgram} !== ''}">
+                            <Title text="Program Details" level="H3"/>
+                            <Text text="{/programDescription}" class="sapUiTinyMarginTop"/>
+                            
+                            <VBox class="sapUiSmallMarginTop">
+                                <Label text="Funding Range:" design="Bold"/>
+                                <Text text="{/fundingRange}"/>
+                            </VBox>
+                            
+                            <VBox class="sapUiSmallMarginTop">
+                                <Label text="Eligibility:" design="Bold"/>
+                                <Text text="{/eligibility}"/>
+                            </VBox>
+                        </VBox>
+                    </l:VerticalLayout>
+                </WizardStep>
+                
+                <!-- Step 2: Applicant Information -->
+                <WizardStep id="applicantStep"
+                           title="Applicant Information"
+                           validated="false">
+                    <form:SimpleForm id="applicantForm"
+                                    editable="true"
+                                    layout="ResponsiveGridLayout"
+                                    labelSpanXL="4"
+                                    labelSpanL="4"
+                                    labelSpanM="12"
+                                    labelSpanS="12"
+                                    adjustLabelSpan="false"
+                                    emptySpanXL="0"
+                                    emptySpanL="0"
+                                    emptySpanM="0"
+                                    emptySpanS="0"
+                                    columnsXL="2"
+                                    columnsL="2"
+                                    columnsM="1"
+                                    singleContainerFullSize="false">
+                        <form:content>
+                            <core:Title text="Personal Information"/>
+                            
+                            <Label text="Full Name" required="true"/>
+                            <Input id="fullNameInput"
+                                  value="{/applicant/fullName}"
+                                  placeholder="Enter full name"
+                                  required="true"
+                                  liveChange="onApplicantFieldChange"/>
+                            
+                            <Label text="Email" required="true"/>
+                            <Input id="emailInput"
+                                  value="{/applicant/email}"
+                                  type="Email"
+                                  placeholder="email@example.com"
+                                  required="true"
+                                  liveChange="onApplicantFieldChange"/>
+                            
+                            <Label text="Phone Number" required="true"/>
+                            <Input id="phoneInput"
+                                  value="{/applicant/phone}"
+                                  type="Tel"
+                                  placeholder="+250 XXX XXX XXX"
+                                  required="true"
+                                  liveChange="onApplicantFieldChange"/>
+                            
+                            <Label text="Date of Birth" required="true"/>
+                            <DatePicker id="dobPicker"
+                                       value="{/applicant/dateOfBirth}"
+                                       required="true"
+                                       change="onApplicantFieldChange"
+                                       placeholder="Select date"/>
+                            
+                            <core:Title text="Address Information"/>
+                            
+                            <Label text="Street Address"/>
+                            <Input id="addressInput"
+                                  value="{/applicant/address}"
+                                  placeholder="Enter street address"
+                                  liveChange="onApplicantFieldChange"/>
+                            
+                            <Label text="City" required="true"/>
+                            <Input id="cityInput"
+                                  value="{/applicant/city}"
+                                  placeholder="Enter city"
+                                  required="true"
+                                  liveChange="onApplicantFieldChange"/>
+                            
+                            <Label text="Country" required="true"/>
+                            <Select id="countrySelect"
+                                   selectedKey="{/applicant/country}"
+                                   change="onApplicantFieldChange">
+                                <core:Item key="" text="Select Country"/>
+                                <core:Item key="RW" text="Rwanda"/>
+                                <core:Item key="KE" text="Kenya"/>
+                                <core:Item key="UG" text="Uganda"/>
+                                <core:Item key="TZ" text="Tanzania"/>
+                                <core:Item key="BI" text="Burundi"/>
+                            </Select>
+                            
+                            <Label text="Postal Code"/>
+                            <Input id="postalInput"
+                                  value="{/applicant/postalCode}"
+                                  placeholder="Enter postal code"
+                                  liveChange="onApplicantFieldChange"/>
+                        </form:content>
+                    </form:SimpleForm>
+                </WizardStep>
+                
+                <!-- Step 3: Project Details -->
+                <WizardStep id="projectStep"
+                           title="Project Details"
+                           validated="false">
+                    <form:SimpleForm id="projectForm"
+                                    editable="true"
+                                    layout="ResponsiveGridLayout"
+                                    labelSpanXL="4"
+                                    labelSpanL="4"
+                                    labelSpanM="12"
+                                    labelSpanS="12"
+                                    adjustLabelSpan="false"
+                                    emptySpanXL="0"
+                                    emptySpanL="0"
+                                    emptySpanM="0"
+                                    emptySpanS="0"
+                                    columnsXL="1"
+                                    columnsL="1"
+                                    columnsM="1"
+                                    singleContainerFullSize="false">
+                        <form:content>
+                            <core:Title text="Project Information"/>
+                            
+                            <Label text="Project Title" required="true"/>
+                            <Input id="projectTitleInput"
+                                  value="{/project/title}"
+                                  placeholder="Enter project title"
+                                  required="true"
+                                  liveChange="onProjectFieldChange"/>
+                            
+                            <Label text="Project Description" required="true"/>
+                            <TextArea id="projectDescTextArea"
+                                     value="{/project/description}"
+                                     rows="5"
+                                     placeholder="Describe your project in detail"
+                                     required="true"
+                                     liveChange="onProjectFieldChange"/>
+                            
+                            <Label text="Funding Amount Requested" required="true"/>
+                            <Input id="fundingAmountInput"
+                                  value="{/project/fundingAmount}"
+                                  type="Number"
+                                  placeholder="Enter amount in RWF"
+                                  required="true"
+                                  liveChange="onProjectFieldChange"/>
+                            
+                            <Label text="Project Duration (months)" required="true"/>
+                            <Input id="durationInput"
+                                  value="{/project/duration}"
+                                  type="Number"
+                                  placeholder="Enter duration"
+                                  required="true"
+                                  liveChange="onProjectFieldChange"/>
+                            
+                            <Label text="Project Category" required="true"/>
+                            <Select id="categorySelect"
+                                   selectedKey="{/project/category}"
+                                   change="onProjectFieldChange">
+                                <core:Item key="" text="Select Category"/>
+                                <core:Item key="tech" text="Technology"/>
+                                <core:Item key="agri" text="Agriculture"/>
+                                <core:Item key="health" text="Healthcare"/>
+                                <core:Item key="edu" text="Education"/>
+                                <core:Item key="other" text="Other"/>
+                            </Select>
+                            
+                            <Label text="Project Start Date" required="true"/>
+                            <DatePicker id="startDatePicker"
+                                       value="{/project/startDate}"
+                                       required="true"
+                                       change="onProjectFieldChange"
+                                       placeholder="Select start date"/>
+                            
+                            <core:Title text="Supporting Documents"/>
+                            
+                            <Label text="Business Plan"/>
+                            <upload:UploadSet id="businessPlanUpload"
+                                            maxFileNameLength="100"
+                                            maxFileSize="5"
+                                            uploadEnabled="true"
+                                            fileTypes="pdf,doc,docx"
+                                            uploadUrl="/upload">
+                            </upload:UploadSet>
+                            
+                            <Label text="Financial Statements"/>
+                            <upload:UploadSet id="financialUpload"
+                                            maxFileNameLength="100"
+                                            maxFileSize="5"
+                                            uploadEnabled="true"
+                                            fileTypes="pdf,xls,xlsx"
+                                            uploadUrl="/upload">
+                            </upload:UploadSet>
+                        </form:content>
+                    </form:SimpleForm>
+                </WizardStep>
+                
+                <!-- Step 4: Review & Submit -->
+                <WizardStep id="reviewStep"
+                           title="Review &amp; Submit"
+                           validated="true">
+                    <MessageStrip text="Please review your application before submitting."
+                                 type="Information"
+                                 showIcon="true"
+                                 class="sapUiSmallMarginBottom"/>
+                    
+                    <VBox class="sapUiSmallMargin">
+                        <!-- Program Info -->
+                        <form:SimpleForm editable="false"
+                                        layout="ResponsiveGridLayout">
+                            <form:content>
+                                <core:Title text="Selected Program"/>
+                                <Label text="Program"/>
+                                <Text text="{/programName}"/>
+                            </form:content>
+                        </form:SimpleForm>
+                        
+                        <!-- Applicant Info -->
+                        <form:SimpleForm editable="false"
+                                        layout="ResponsiveGridLayout"
+                                        columnsXL="2"
+                                        columnsL="2"
+                                        columnsM="1">
+                            <form:content>
+                                <core:Title text="Applicant Information"/>
+                                <Label text="Full Name"/>
+                                <Text text="{/applicant/fullName}"/>
+                                
+                                <Label text="Email"/>
+                                <Text text="{/applicant/email}"/>
+                                
+                                <Label text="Phone"/>
+                                <Text text="{/applicant/phone}"/>
+                                
+                                <Label text="Date of Birth"/>
+                                <Text text="{/applicant/dateOfBirth}"/>
+                                
+                                <Label text="City"/>
+                                <Text text="{/applicant/city}"/>
+                                
+                                <Label text="Country"/>
+                                <Text text="{/applicant/country}"/>
+                            </form:content>
+                        </form:SimpleForm>
+                        
+                        <!-- Project Info -->
+                        <form:SimpleForm editable="false"
+                                        layout="ResponsiveGridLayout">
+                            <form:content>
+                                <core:Title text="Project Details"/>
+                                <Label text="Project Title"/>
+                                <Text text="{/project/title}"/>
+                                
+                                <Label text="Description"/>
+                                <Text text="{/project/description}"/>
+                                
+                                <Label text="Funding Amount"/>
+                                <Text text="{/project/fundingAmount} RWF"/>
+                                
+                                <Label text="Duration"/>
+                                <Text text="{/project/duration} months"/>
+                                
+                                <Label text="Category"/>
+                                <Text text="{/project/category}"/>
+                                
+                                <Label text="Start Date"/>
+                                <Text text="{/project/startDate}"/>
+                            </form:content>
+                        </form:SimpleForm>
+                        
+                        <CheckBox id="termsCheckBox"
+                                 text="I agree to the terms and conditions"
+                                 selected="{/termsAccepted}"
+                                 select="onTermsChange"
+                                 class="sapUiMediumMarginTop"/>
+                    </VBox>
+                </WizardStep>
+            </Wizard>
+        </content>
+        
+        <footer>
+            <Toolbar>
+                <ToolbarSpacer/>
+                <Button id="wizardBackButton"
+                       text="Back"
+                       press="onWizardBack"
+                       visible="{= ${/currentStep} &gt; 0}"/>
+                <Button id="wizardNextButton"
+                       text="Next"
+                       type="Emphasized"
+                       press="onWizardNext"
+                       enabled="{/canProceed}"
+                       visible="{= ${/currentStep} &lt; 3}"/>
+                <Button id="wizardSubmitButton"
+                       text="Submit Application"
+                       type="Accept"
+                       press="onSubmitApplication"
+                       enabled="{/termsAccepted}"
+                       visible="{= ${/currentStep} === 3}"/>
+            </Toolbar>
+        </footer>
+    </Page>
+</mvc:View>

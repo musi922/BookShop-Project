@@ -1,0 +1,71 @@
+{
+  "programId": "startup",
+  "programName": "Startup Funding Program",
+  "description": "Support for early-stage startups with innovative business ideas. This program provides seed funding to help entrepreneurs launch their ventures.",
+  "fundingRange": {
+    "min": 5000000,
+    "max": 50000000,
+    "currency": "RWF"
+  },
+  "eligibility": {
+    "businessAge": {
+      "max": 2,
+      "unit": "years"
+    },
+    "registrationRequired": true,
+    "country": ["RW"],
+    "requirements": [
+      "Clear business plan",
+      "Growth potential",
+      "Innovative idea"
+    ]
+  },
+  "steps": {
+    "programSelection": {
+      "enabled": true,
+      "required": true
+    },
+    "applicantInfo": {
+      "enabled": true,
+      "required": true,
+      "fields": {
+        "fullName": {"required": true, "visible": true},
+        "email": {"required": true, "visible": true},
+        "phone": {"required": true, "visible": true},
+        "dateOfBirth": {"required": true, "visible": true},
+        "address": {"required": false, "visible": true},
+        "city": {"required": true, "visible": true},
+        "country": {"required": true, "visible": true},
+        "postalCode": {"required": false, "visible": true}
+      }
+    },
+    "projectDetails": {
+      "enabled": true,
+      "required": true,
+      "fields": {
+        "title": {"required": true, "visible": true},
+        "description": {"required": true, "visible": true, "minLength": 100},
+        "fundingAmount": {"required": true, "visible": true},
+        "duration": {"required": true, "visible": true, "max": 24},
+        "category": {"required": true, "visible": true},
+        "startDate": {"required": true, "visible": true}
+      },
+      "documents": {
+        "businessPlan": {"required": true, "maxSize": 5, "formats": ["pdf", "doc", "docx"]},
+        "financialStatements": {"required": false, "maxSize": 5, "formats": ["pdf", "xls", "xlsx"]}
+      }
+    },
+    "review": {
+      "enabled": true,
+      "termsAndConditions": true
+    }
+  },
+  "notifications": {
+    "email": true,
+    "sms": false
+  },
+  "processingTime": {
+    "value": 30,
+    "unit": "days"
+  }
+}

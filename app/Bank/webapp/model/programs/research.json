@@ -1,0 +1,74 @@
+{
+  "programId": "research",
+  "programName": "Research & Development Grant",
+  "description": "Funding for research and development projects in strategic sectors including agriculture, health, and technology.",
+  "fundingRange": {
+    "min": 15000000,
+    "max": 150000000,
+    "currency": "RWF"
+  },
+  "eligibility": {
+    "businessAge": {
+      "min": 0,
+      "unit": "years"
+    },
+    "registrationRequired": true,
+    "country": ["RW", "KE", "UG", "TZ", "BI"],
+    "requirements": [
+      "Research institutions, universities, or companies with R&D departments",
+      "Demonstrate research methodology",
+      "Expected outcomes and deliverables",
+      "Qualified research team"
+    ]
+  },
+  "steps": {
+    "programSelection": {
+      "enabled": true,
+      "required": true
+    },
+    "applicantInfo": {
+      "enabled": true,
+      "required": true,
+      "fields": {
+        "fullName": {"required": true, "visible": true},
+        "email": {"required": true, "visible": true},
+        "phone": {"required": true, "visible": true},
+        "dateOfBirth": {"required": false, "visible": true},
+        "address": {"required": true, "visible": true},
+        "city": {"required": true, "visible": true},
+        "country": {"required": true, "visible": true},
+        "postalCode": {"required": false, "visible": true}
+      }
+    },
+    "projectDetails": {
+      "enabled": true,
+      "required": true,
+      "fields": {
+        "title": {"required": true, "visible": true},
+        "description": {"required": true, "visible": true, "minLength": 250},
+        "fundingAmount": {"required": true, "visible": true},
+        "duration": {"required": true, "visible": true, "max": 48},
+        "category": {"required": true, "visible": true},
+        "startDate": {"required": true, "visible": true}
+      },
+      "documents": {
+        "researchProposal": {"required": true, "maxSize": 15, "formats": ["pdf", "doc", "docx"]},
+        "financialStatements": {"required": false, "maxSize": 5, "formats": ["pdf", "xls", "xlsx"]},
+        "cvResearchers": {"required": true, "maxSize": 10, "formats": ["pdf"]},
+        "ethicsApproval": {"required": false, "maxSize": 5, "formats": ["pdf"]}
+      }
+    },
+    "review": {
+      "enabled": true,
+      "termsAndConditions": true
+    }
+  },
+  "notifications": {
+    "email": true,
+    "sms": false
+  },
+  "processingTime": {
+    "value": 90,
+    "unit": "days"
+  }
+}
