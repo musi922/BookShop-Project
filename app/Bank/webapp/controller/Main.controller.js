@@ -7,7 +7,7 @@ sap.ui.define([
     "use strict";
 
     return Controller.extend("com.bank.controller.Main", {
-        
+
         onInit: function () {
             // Initialize the data model
             var oModel = new JSONModel({
@@ -16,7 +16,7 @@ sap.ui.define([
                 programDescription: "",
                 fundingRange: "",
                 eligibility: "",
-                currentStep: 0,
+                currentStep: 0, // Start at step 0
                 canProceed: false,
                 termsAccepted: false,
                 programValueState: "None",
@@ -40,13 +40,22 @@ sap.ui.define([
                 }
             });
             this.getView().setModel(oModel);
-            
+
             // Load program configurations
             this._loadProgramConfigs();
+
+            // Debug: Check wizard steps on init
+            var oWizard = this.byId("fundingWizard");
+            if (oWizard) {
+                var aSteps = oWizard.getSteps();
+                console.log("Initialized wizard steps: ", aSteps.map(step => step.getId()));
+                if (aSteps.length !== 4) {
+                    console.error("Unexpected number of steps: ", aSteps.length);
+                }
+            }
         },
 
         _loadProgramConfigs: function () {
-            // Program configuration
             this._programConfigs = {
                 startup: {
                     name: "Startup Funding Program",
@@ -79,26 +88,24 @@ sap.ui.define([
             var sSelectedKey = oEvent.getParameter("selectedItem").getKey();
             var oModel = this.getView().getModel();
             var oConfig = this._programConfigs[sSelectedKey];
-            
+
             if (oConfig) {
                 oModel.setProperty("/selectedProgram", sSelectedKey);
                 oModel.setProperty("/programName", oConfig.name);
                 oModel.setProperty("/programDescription", oConfig.description);
                 oModel.setProperty("/fundingRange", oConfig.fundingRange);
                 oModel.setProperty("/eligibility", oConfig.eligibility);
-                
-                // Validate first step
+
                 this._validateProgramStep();
             }
         },
 
         _validateProgramStep: function () {
             var oModel = this.getView().getModel();
-            var oWizard = this.byId("fundingWizard");
             var oProgramStep = this.byId("programStep");
-            
+
             var bValid = oModel.getProperty("/selectedProgram") !== "";
-            
+
             if (bValid) {
                 oProgramStep.setValidated(true);
                 oModel.setProperty("/canProceed", true);
@@ -115,23 +122,21 @@ sap.ui.define([
         _validateApplicantStep: function () {
             var oModel = this.getView().getModel();
             var oApplicantStep = this.byId("applicantStep");
-            
+
             var oApplicant = oModel.getProperty("/applicant");
-            
-            // Check required fields
-            var bValid = oApplicant.fullName && 
-                        oApplicant.email && 
-                        oApplicant.phone && 
-                        oApplicant.dateOfBirth && 
-                        oApplicant.city && 
-                        oApplicant.country;
-            
-            // Validate email format
+
+            var bValid = oApplicant.fullName &&
+                oApplicant.email &&
+                oApplicant.phone &&
+                oApplicant.dateOfBirth &&
+                oApplicant.city &&
+                oApplicant.country;
+
             if (bValid && oApplicant.email) {
                 var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 bValid = emailPattern.test(oApplicant.email);
             }
-            
+
             if (bValid) {
                 oApplicantStep.setValidated(true);
                 oModel.setProperty("/canProceed", true);
@@ -148,17 +153,16 @@ sap.ui.define([
         _validateProjectStep: function () {
             var oModel = this.getView().getModel();
             var oProjectStep = this.byId("projectStep");
-            
+
             var oProject = oModel.getProperty("/project");
-            
-            // Check required fields
-            var bValid = oProject.title && 
-                        oProject.description && 
-                        oProject.fundingAmount && 
-                        oProject.duration && 
-                        oProject.category && 
-                        oProject.startDate;
-            
+
+            var bValid = oProject.title &&
+                oProject.description &&
+                oProject.fundingAmount &&
+                oProject.duration &&
+                oProject.category &&
+                oProject.startDate;
+
             if (bValid) {
                 oProjectStep.setValidated(true);
                 oModel.setProperty("/canProceed", true);
@@ -171,12 +175,28 @@ sap.ui.define([
         onStepActivate: function (oEvent) {
             var oModel = this.getView().getModel();
             var oWizard = this.byId("fundingWizard");
-            var iStepNumber = oWizard.getSteps().indexOf(oEvent.getParameter("step"));
-            
+            var oStep = oEvent.getParameter("step");
+            console.log("Activated step object: ", oStep);
+            var iStepNumber = oWizard.getSteps().indexOf(oStep);
+            console.log("Activated step index: ", iStepNumber);
+
+            // Fallback to currentStep if step parameter is undefined
+            if (iStepNumber === -1) {
+                iStepNumber = oModel.getProperty("/currentStep");
+                console.log("Falling back to currentStep: ", iStepNumber);
+            }
+
             oModel.setProperty("/currentStep", iStepNumber);
-            
-            // Validate current step when activated
-            switch(iStepNumber) {
+
+            // Validate the current step
+            this._validateCurrentStep(iStepNumber);
+
+            this.getView().getModel().refresh(true);
+        },
+
+        _validateCurrentStep: function (iStepNumber) {
+            var oModel = this.getView().getModel();
+            switch (iStepNumber) {
                 case 0:
                     this._validateProgramStep();
                     break;
@@ -187,7 +207,8 @@ sap.ui.define([
                     this._validateProjectStep();
                     break;
                 case 3:
-                    oModel.setProperty("/canProceed", false);
+                    oModel.setProperty("/canProceed", false); // Disable Next button
+                    this.byId("wizardSubmitButton").setVisible(true); // Ensure button is visible
                     break;
             }
         },
@@ -201,23 +222,33 @@ sap.ui.define([
             var oWizard = this.byId("fundingWizard");
             var oModel = this.getView().getModel();
             var iCurrentStep = oModel.getProperty("/currentStep");
-            
-            // Get current step and check if it's validated
             var aSteps = oWizard.getSteps();
             var oCurrentStep = aSteps[iCurrentStep];
-            
-            if (oCurrentStep.getValidated()) {
-                oWizard.nextStep();
-                // currentStep will be updated by onStepActivate event
-            } else {
-                MessageToast.show("Please complete all required fields before proceeding.");
+            console.log("Current step before next: ", oCurrentStep ? oCurrentStep.getId() : "undefined", "Index: ", iCurrentStep);
+
+            if (iCurrentStep >= 0 && iCurrentStep < aSteps.length - 1) {
+                if (oCurrentStep && oCurrentStep.getValidated()) {
+                    oWizard.nextStep();
+                    oModel.setProperty("/currentStep", iCurrentStep + 1); // Update current step
+                    console.log("After next, currentStep: ", oModel.getProperty("/currentStep"));
+                } else {
+                    MessageToast.show("Please complete all required fields before proceeding.");
+                }
+            } else if (iCurrentStep === aSteps.length - 1) {
+                MessageToast.show("This is the final step. Please review and submit.");
             }
         },
 
         onWizardBack: function () {
             var oWizard = this.byId("fundingWizard");
-            oWizard.previousStep();
-            // currentStep will be updated by onStepActivate event
+            var oModel = this.getView().getModel();
+            var iCurrentStep = oModel.getProperty("/currentStep");
+            console.log("Current step before back: ", iCurrentStep);
+            if (iCurrentStep > 0) {
+                oWizard.previousStep();
+                oModel.setProperty("/currentStep", iCurrentStep - 1); // Update current step
+                console.log("After back, currentStep: ", oModel.getProperty("/currentStep"));
+            }
         },
 
         onWizardComplete: function () {
@@ -227,39 +258,32 @@ sap.ui.define([
         onSubmitApplication: function () {
             var oModel = this.getView().getModel();
             var oData = oModel.getData();
-            
-            // Show confirmation dialog
+
             MessageBox.confirm(
                 "Are you sure you want to submit your funding application?", {
-                    title: "Confirm Submission",
-                    onClose: function (oAction) {
-                        if (oAction === MessageBox.Action.OK) {
-                            this._submitApplication(oData);
-                        }
-                    }.bind(this)
-                }
+                title: "Confirm Submission",
+                onClose: function (oAction) {
+                    if (oAction === MessageBox.Action.OK) {
+                        this._submitApplication(oData);
+                    }
+                }.bind(this)
+            }
             );
         },
 
         _submitApplication: function (oData) {
-            // Show loading indicator
             sap.ui.core.BusyIndicator.show(0);
-            
-            // Simulate API call
+
             setTimeout(function () {
                 sap.ui.core.BusyIndicator.hide();
-                
-                // In real scenario, make actual API call here
-                // jQuery.ajax({ ... });
-                
+
                 MessageBox.success(
                     "Your application has been submitted successfully! Reference Number: FA-" + Date.now(), {
-                        title: "Application Submitted",
-                        onClose: function () {
-                            // Reset the form
-                            this._resetWizard();
-                        }.bind(this)
-                    }
+                    title: "Application Submitted",
+                    onClose: function () {
+                        this._resetWizard();
+                    }.bind(this)
+                }
                 );
             }.bind(this), 2000);
         },
@@ -267,8 +291,7 @@ sap.ui.define([
         _resetWizard: function () {
             var oWizard = this.byId("fundingWizard");
             var oModel = this.getView().getModel();
-            
-            // Reset model data
+
             oModel.setData({
                 selectedProgram: "",
                 programName: "",
@@ -297,8 +320,7 @@ sap.ui.define([
                     startDate: ""
                 }
             });
-            
-            // Reset wizard to first step
+
             oWizard.discardProgress(this.byId("programStep"));
         }
     });
