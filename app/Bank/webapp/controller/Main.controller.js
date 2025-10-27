@@ -172,28 +172,6 @@ sap.ui.define([
             }
         },
 
-        onStepActivate: function (oEvent) {
-            var oModel = this.getView().getModel();
-            var oWizard = this.byId("fundingWizard");
-            var oStep = oEvent.getParameter("step");
-            console.log("Activated step object: ", oStep);
-            var iStepNumber = oWizard.getSteps().indexOf(oStep);
-            console.log("Activated step index: ", iStepNumber);
-
-            // Fallback to currentStep if step parameter is undefined
-            if (iStepNumber === -1) {
-                iStepNumber = oModel.getProperty("/currentStep");
-                console.log("Falling back to currentStep: ", iStepNumber);
-            }
-
-            oModel.setProperty("/currentStep", iStepNumber);
-
-            // Validate the current step
-            this._validateCurrentStep(iStepNumber);
-
-            this.getView().getModel().refresh(true);
-        },
-
         _validateCurrentStep: function (iStepNumber) {
             var oModel = this.getView().getModel();
             switch (iStepNumber) {

@@ -15,7 +15,8 @@
             <Wizard id="fundingWizard"
                     complete="onWizardComplete"
                     stepActivate="onStepActivate"
-                    class="sapUiResponsiveMargin">
+                    class="sapUiResponsiveMargin"
+                    showNextButton="false">
                 
                 <!-- Step 1: Program Selection -->
                 <WizardStep id="programStep"
