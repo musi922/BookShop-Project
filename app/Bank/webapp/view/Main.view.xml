@@ -9,7 +9,8 @@
     
     <Page id="wizardPage" 
           title="Funding Application"
-          showNavButton="false">
+          showNavButton="false"
+          class="sapUiSmallMargin">
         
         <content>
             <Wizard id="fundingWizard"
@@ -219,23 +220,31 @@
                             
                             <core:Title text="Supporting Documents"/>
                             
-                            <Label text="Business Plan"/>
-                            <upload:UploadSet id="businessPlanUpload"
-                                            maxFileNameLength="100"
-                                            maxFileSize="5"
-                                            uploadEnabled="true"
-                                            fileTypes="pdf,doc,docx"
-                                            uploadUrl="/upload">
-                            </upload:UploadSet>
+                            <l:HorizontalLayout>
+                                <Label text="Business Plan" class="sapUiTinyMarginEnd"/>
+                                <ToolbarSpacer/>
+                                <upload:UploadSet id="businessPlanUpload"
+                                                maxFileNameLength="100"
+                                                maxFileSize="5"
+                                                uploadEnabled="true"
+                                                fileTypes="pdf,doc,docx"
+                                                uploadUrl="/upload"
+                                                mode="None">
+                                </upload:UploadSet>
+                            </l:HorizontalLayout>
                             
-                            <Label text="Financial Statements"/>
-                            <upload:UploadSet id="financialUpload"
-                                            maxFileNameLength="100"
-                                            maxFileSize="5"
-                                            uploadEnabled="true"
-                                            fileTypes="pdf,xls,xlsx"
-                                            uploadUrl="/upload">
-                            </upload:UploadSet>
+                            <l:HorizontalLayout class="sapUiSmallMarginTop">
+                                <Label text="Financial Statements" class="sapUiTinyMarginEnd"/>
+                                <ToolbarSpacer/>
+                                <upload:UploadSet id="financialUpload"
+                                                maxFileNameLength="100"
+                                                maxFileSize="5"
+                                                uploadEnabled="true"
+                                                fileTypes="pdf,xls,xlsx"
+                                                uploadUrl="/upload"
+                                                mode="None">
+                                </upload:UploadSet>
+                            </l:HorizontalLayout>
                         </form:content>
                     </form:SimpleForm>
                 </WizardStep>
@@ -333,7 +342,7 @@
         </content>
         
         <footer>
-            <Toolbar>
+            <Toolbar class="sapUiSmallMargin">
                 <ToolbarSpacer/>
                 <Button id="wizardBackButton"
                         text="Back"
