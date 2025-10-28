@@ -30,8 +30,6 @@
                                selectedKey="{/selectedProgram}"
                                change="onProgramChange"
                                width="100%"
-                               valueState="{/programValueState}"
-                               valueStateText="Please select a funding program"
                                class="sapUiSmallMarginTop">
                             <core:Item key="" text="Select a Program"/>
                             <core:Item key="startup" text="Startup Funding Program"/>
@@ -315,39 +313,44 @@
                             </form:content>
                         </form:SimpleForm>
                         
-                        <CheckBox id="termsCheckBox"
-                                 text="I agree to the terms and conditions"
-                                 selected="{/termsAccepted}"
-                                 select="onTermsChange"
-                                 class="sapUiMediumMarginTop"/>
+                        <VBox class="sapUiMediumMarginTop">
+                            <CheckBox id="termsCheckBox"
+                                     text="I agree to the terms and conditions and confirm that all information provided is accurate"
+                                     selected="{/termsAccepted}"
+                                     select="onTermsChange"/>
+                            <Text text="* You must accept the terms and conditions to submit your application"
+                                  class="sapUiTinyMarginTop"
+                                  visible="{= !${/termsAccepted}}"
+                                  textAlign="Left">
+                                <layoutData>
+                                    <FlexItemData growFactor="1"/>
+                                </layoutData>
+                            </Text>
+                        </VBox>
                     </VBox>
                 </WizardStep>
             </Wizard>
         </content>
         
-       <footer>
-    <Toolbar>
-        <ToolbarSpacer/>
-        <Button id="wizardBackButton"
-                text="Back"
-                press="onWizardBack"
-                visible="{= ${/currentStep} &gt; 0}"/>
-        <Button id="wizardNextButton"
-                text="Next"
-                type="Emphasized"
-                press="onWizardNext"
-                enabled="{/canProceed}"
-                visible="{= ${/currentStep} &lt; 3}"/>
-        <Button id="wizardSubmitButton"
-                text="Submit Application"
-                type="Accept"
-                press="onSubmitApplication"
-                enabled="{/termsAccepted}"
-                visible= "{= ${/currentStep} === 3 }"
-
-
-        />
-    </Toolbar>
-</footer>
+        <footer>
+            <Toolbar>
+                <ToolbarSpacer/>
+                <Button id="wizardBackButton"
+                        text="Back"
+                        press="onWizardBack"
+                        visible="{= ${/currentStep} &gt; 1}"/>
+                <Button id="wizardNextButton"
+                        text="Next"
+                        type="Emphasized"
+                        press="onWizardNext"
+                        visible="{= ${/currentStep} &lt; 4}"/>
+                <Button id="wizardSubmitButton"
+                        text="Submit Application"
+                        type="Accept"
+                        press="onSubmitApplication"
+                        enabled="{/termsAccepted}"
+                        visible="{= ${/currentStep} === 4}"/>
+            </Toolbar>
+        </footer>
     </Page>
 </mvc:View>
