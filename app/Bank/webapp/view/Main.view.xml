@@ -22,7 +22,8 @@
                 <!-- Step 1: Program Selection -->
                 <WizardStep id="programStep"
                            title="Select Funding Program"
-                           validated="false">
+                           validated="false"
+                           visible="{config>/steps/programSelection/enabled}">
                     <l:VerticalLayout class="sapUiSmallMargin">
                         <Label text="Choose a Funding Program" 
                                labelFor="programSelect"
@@ -41,16 +42,30 @@
                         
                         <VBox class="sapUiMediumMarginTop" visible="{= ${/selectedProgram} !== ''}">
                             <Title text="Program Details" level="H3"/>
-                            <Text text="{/programDescription}" class="sapUiTinyMarginTop"/>
+                            <Text text="{config>/description}" class="sapUiTinyMarginTop"/>
                             
                             <VBox class="sapUiSmallMarginTop">
                                 <Label text="Funding Range:" design="Bold"/>
-                                <Text text="{/fundingRange}"/>
+                                <Text text="{config>/fundingRange/min} - {config>/fundingRange/max} {config>/fundingRange/currency}"/>
                             </VBox>
                             
                             <VBox class="sapUiSmallMarginTop">
                                 <Label text="Eligibility:" design="Bold"/>
-                                <Text text="{/eligibility}"/>
+                                <VBox class="sapUiTinyMarginTop">
+                                    <Text text="• Business Age: Max {config>/eligibility/businessAge/max} {config>/eligibility/businessAge/unit}"/>
+                                    <Text text="• Registration Required: {config>/eligibility/registrationRequired}"/>
+                                    <Text text="• Additional Requirements:"/>
+                                    <VBox class="sapUiTinyMarginBegin">
+                                        <Text text="{config>/eligibility/requirements/0}" visible="{= ${config>/eligibility/requirements/0} !== undefined}"/>
+                                        <Text text="{config>/eligibility/requirements/1}" visible="{= ${config>/eligibility/requirements/1} !== undefined}"/>
+                                        <Text text="{config>/eligibility/requirements/2}" visible="{= ${config>/eligibility/requirements/2} !== undefined}"/>
+                                    </VBox>
+                                </VBox>
+                            </VBox>
+                            
+                            <VBox class="sapUiSmallMarginTop">
+                                <Label text="Processing Time:" design="Bold"/>
+                                <Text text="{config>/processingTime/value} {config>/processingTime/unit}"/>
                             </VBox>
                         </VBox>
                     </l:VerticalLayout>
@@ -59,60 +74,91 @@
                 <!-- Step 2: Applicant Information -->
                 <WizardStep id="applicantStep"
                            title="Applicant Information"
-                           validated="false">
+                           validated="false"
+                           visible="{config>/steps/applicantInfo/enabled}">
                     <form:SimpleForm id="applicantForm"
                                     editable="true">
                         <form:content>
                             <core:Title text="Personal Information"/>
                             
-                            <Label text="Full Name" required="true"/>
+                            <!-- Full Name -->
+                            <Label text="Full Name" 
+                                   required="{config>/steps/applicantInfo/fields/fullName/required}"
+                                   visible="{config>/steps/applicantInfo/fields/fullName/visible}"/>
                             <Input id="fullNameInput"
                                   value="{/applicant/fullName}"
                                   placeholder="Enter full name"
-                                  required="true"
+                                  required="{config>/steps/applicantInfo/fields/fullName/required}"
+                                  visible="{config>/steps/applicantInfo/fields/fullName/visible}"
                                   liveChange="onApplicantFieldChange"/>
                             
-                            <Label text="Email" required="true"/>
+                            <!-- Email -->
+                            <Label text="Email" 
+                                   required="{config>/steps/applicantInfo/fields/email/required}"
+                                   visible="{config>/steps/applicantInfo/fields/email/visible}"/>
                             <Input id="emailInput"
                                   value="{/applicant/email}"
                                   type="Email"
                                   placeholder="email@example.com"
-                                  required="true"
+                                  required="{config>/steps/applicantInfo/fields/email/required}"
+                                  visible="{config>/steps/applicantInfo/fields/email/visible}"
                                   liveChange="onApplicantFieldChange"/>
                             
-                            <Label text="Phone Number" required="true"/>
+                            <!-- Phone -->
+                            <Label text="Phone Number" 
+                                   required="{config>/steps/applicantInfo/fields/phone/required}"
+                                   visible="{config>/steps/applicantInfo/fields/phone/visible}"/>
                             <Input id="phoneInput"
                                   value="{/applicant/phone}"
                                   type="Tel"
                                   placeholder="+250 XXX XXX XXX"
-                                  required="true"
+                                  required="{config>/steps/applicantInfo/fields/phone/required}"
+                                  visible="{config>/steps/applicantInfo/fields/phone/visible}"
                                   liveChange="onApplicantFieldChange"/>
                             
-                            <Label text="Date of Birth" required="true"/>
+                            <!-- Date of Birth -->
+                            <Label text="Date of Birth" 
+                                   required="{config>/steps/applicantInfo/fields/dateOfBirth/required}"
+                                   visible="{config>/steps/applicantInfo/fields/dateOfBirth/visible}"/>
                             <DatePicker id="dobPicker"
                                        value="{/applicant/dateOfBirth}"
-                                       required="true"
+                                       required="{config>/steps/applicantInfo/fields/dateOfBirth/required}"
+                                       visible="{config>/steps/applicantInfo/fields/dateOfBirth/visible}"
                                        change="onApplicantFieldChange"
                                        placeholder="Select date"/>
                             
                             <core:Title text="Address Information"/>
                             
-                            <Label text="Street Address"/>
+                            <!-- Address -->
+                            <Label text="Street Address"
+                                   required="{config>/steps/applicantInfo/fields/address/required}"
+                                   visible="{config>/steps/applicantInfo/fields/address/visible}"/>
                             <Input id="addressInput"
                                   value="{/applicant/address}"
                                   placeholder="Enter street address"
+                                  required="{config>/steps/applicantInfo/fields/address/required}"
+                                  visible="{config>/steps/applicantInfo/fields/address/visible}"
                                   liveChange="onApplicantFieldChange"/>
                             
-                            <Label text="City" required="true"/>
+                            <!-- City -->
+                            <Label text="City" 
+                                   required="{config>/steps/applicantInfo/fields/city/required}"
+                                   visible="{config>/steps/applicantInfo/fields/city/visible}"/>
                             <Input id="cityInput"
                                   value="{/applicant/city}"
                                   placeholder="Enter city"
-                                  required="true"
+                                  required="{config>/steps/applicantInfo/fields/city/required}"
+                                  visible="{config>/steps/applicantInfo/fields/city/visible}"
                                   liveChange="onApplicantFieldChange"/>
                             
-                            <Label text="Country" required="true"/>
+                            <!-- Country -->
+                            <Label text="Country" 
+                                   required="{config>/steps/applicantInfo/fields/country/required}"
+                                   visible="{config>/steps/applicantInfo/fields/country/visible}"/>
                             <Select id="countrySelect"
                                    selectedKey="{/applicant/country}"
+                                   required="{config>/steps/applicantInfo/fields/country/required}"
+                                   visible="{config>/steps/applicantInfo/fields/country/visible}"
                                    change="onApplicantFieldChange">
                                 <core:Item key="" text="Select Country"/>
                                 <core:Item key="RW" text="Rwanda"/>
@@ -122,10 +168,15 @@
                                 <core:Item key="BI" text="Burundi"/>
                             </Select>
                             
-                            <Label text="Postal Code"/>
+                            <!-- Postal Code -->
+                            <Label text="Postal Code"
+                                   required="{config>/steps/applicantInfo/fields/postalCode/required}"
+                                   visible="{config>/steps/applicantInfo/fields/postalCode/visible}"/>
                             <Input id="postalInput"
                                   value="{/applicant/postalCode}"
                                   placeholder="Enter postal code"
+                                  required="{config>/steps/applicantInfo/fields/postalCode/required}"
+                                  visible="{config>/steps/applicantInfo/fields/postalCode/visible}"
                                   liveChange="onApplicantFieldChange"/>
                         </form:content>
                     </form:SimpleForm>
@@ -134,7 +185,8 @@
                 <!-- Step 3: Project Details -->
                 <WizardStep id="projectStep"
                            title="Project Details"
-                           validated="false">
+                           validated="false"
+                           visible="{config>/steps/projectDetails/enabled}">
                     <form:SimpleForm id="projectForm"
                                     editable="true"
                                     layout="ResponsiveGridLayout"
@@ -154,40 +206,61 @@
                         <form:content>
                             <core:Title text="Project Information"/>
                             
-                            <Label text="Project Title" required="true"/>
+                            <!-- Project Title -->
+                            <Label text="Project Title" 
+                                   required="{config>/steps/projectDetails/fields/title/required}"
+                                   visible="{config>/steps/projectDetails/fields/title/visible}"/>
                             <Input id="projectTitleInput"
                                   value="{/project/title}"
                                   placeholder="Enter project title"
-                                  required="true"
+                                  required="{config>/steps/projectDetails/fields/title/required}"
+                                  visible="{config>/steps/projectDetails/fields/title/visible}"
                                   liveChange="onProjectFieldChange"/>
                             
-                            <Label text="Project Description" required="true"/>
+                            <!-- Project Description -->
+                            <Label text="Project Description" 
+                                   required="{config>/steps/projectDetails/fields/description/required}"
+                                   visible="{config>/steps/projectDetails/fields/description/visible}"/>
                             <TextArea id="projectDescTextArea"
                                      value="{/project/description}"
                                      rows="5"
-                                     placeholder="Describe your project in detail"
-                                     required="true"
+                                     placeholder="Describe your project in detail (min {config>/steps/projectDetails/fields/description/minLength} characters)"
+                                     required="{config>/steps/projectDetails/fields/description/required}"
+                                     visible="{config>/steps/projectDetails/fields/description/visible}"
                                      liveChange="onProjectFieldChange"/>
                             
-                            <Label text="Funding Amount Requested" required="true"/>
+                            <!-- Funding Amount -->
+                            <Label text="Funding Amount Requested (RWF)" 
+                                   required="{config>/steps/projectDetails/fields/fundingAmount/required}"
+                                   visible="{config>/steps/projectDetails/fields/fundingAmount/visible}"/>
                             <Input id="fundingAmountInput"
                                   value="{/project/fundingAmount}"
                                   type="Number"
-                                  placeholder="Enter amount in RWF"
-                                  required="true"
+                                  placeholder="Enter amount between {config>/fundingRange/min} and {config>/fundingRange/max}"
+                                  required="{config>/steps/projectDetails/fields/fundingAmount/required}"
+                                  visible="{config>/steps/projectDetails/fields/fundingAmount/visible}"
                                   liveChange="onProjectFieldChange"/>
                             
-                            <Label text="Project Duration (months)" required="true"/>
+                            <!-- Project Duration -->
+                            <Label text="Project Duration (months)" 
+                                   required="{config>/steps/projectDetails/fields/duration/required}"
+                                   visible="{config>/steps/projectDetails/fields/duration/visible}"/>
                             <Input id="durationInput"
                                   value="{/project/duration}"
                                   type="Number"
-                                  placeholder="Enter duration"
-                                  required="true"
+                                  placeholder="Enter duration (max {config>/steps/projectDetails/fields/duration/max} months)"
+                                  required="{config>/steps/projectDetails/fields/duration/required}"
+                                  visible="{config>/steps/projectDetails/fields/duration/visible}"
                                   liveChange="onProjectFieldChange"/>
                             
-                            <Label text="Project Category" required="true"/>
+                            <!-- Project Category -->
+                            <Label text="Project Category" 
+                                   required="{config>/steps/projectDetails/fields/category/required}"
+                                   visible="{config>/steps/projectDetails/fields/category/visible}"/>
                             <Select id="categorySelect"
                                    selectedKey="{/project/category}"
+                                   required="{config>/steps/projectDetails/fields/category/required}"
+                                   visible="{config>/steps/projectDetails/fields/category/visible}"
                                    change="onProjectFieldChange">
                                 <core:Item key="" text="Select Category"/>
                                 <core:Item key="tech" text="Technology"/>
@@ -197,40 +270,59 @@
                                 <core:Item key="other" text="Other"/>
                             </Select>
                             
-                            <Label text="Project Start Date" required="true"/>
+                            <!-- Start Date -->
+                            <Label text="Project Start Date" 
+                                   required="{config>/steps/projectDetails/fields/startDate/required}"
+                                   visible="{config>/steps/projectDetails/fields/startDate/visible}"/>
                             <DatePicker id="startDatePicker"
                                        value="{/project/startDate}"
-                                       required="true"
+                                       required="{config>/steps/projectDetails/fields/startDate/required}"
+                                       visible="{config>/steps/projectDetails/fields/startDate/visible}"
                                        change="onProjectFieldChange"
                                        placeholder="Select start date"/>
                             
                             <core:Title text="Supporting Documents"/>
                             
-                            <l:HorizontalLayout>
-                                <Label text="Business Plan" class="sapUiTinyMarginEnd"/>
-                                <ToolbarSpacer/>
+                            <!-- Business Plan Upload -->
+                            <VBox visible="{= ${config>/steps/projectDetails/documents/businessPlan/required} !== undefined}">
+                                <l:HorizontalLayout>
+                                    <Label text="Business Plan" 
+                                           required="{config>/steps/projectDetails/documents/businessPlan/required}"
+                                           class="sapUiTinyMarginEnd"/>
+                                    <ToolbarSpacer/>
+                                </l:HorizontalLayout>
                                 <upload:UploadSet id="businessPlanUpload"
                                                 maxFileNameLength="100"
                                                 maxFileSize="5"
                                                 uploadEnabled="true"
                                                 fileTypes="pdf,doc,docx"
                                                 uploadUrl="/upload"
-                                                mode="None">
+                                                mode="None"
+                                                afterItemAdded="onFileUploaded"
+                                                afterItemRemoved="onFileRemoved">
                                 </upload:UploadSet>
-                            </l:HorizontalLayout>
+                            </VBox>
                             
-                            <l:HorizontalLayout class="sapUiSmallMarginTop">
-                                <Label text="Financial Statements" class="sapUiTinyMarginEnd"/>
-                                <ToolbarSpacer/>
+                            <!-- Financial Statements Upload -->
+                            <VBox class="sapUiSmallMarginTop" 
+                                  visible="{= ${config>/steps/projectDetails/documents/financialStatements/required} !== undefined}">
+                                <l:HorizontalLayout>
+                                    <Label text="Financial Statements" 
+                                           required="{config>/steps/projectDetails/documents/financialStatements/required}"
+                                           class="sapUiTinyMarginEnd"/>
+                                    <ToolbarSpacer/>
+                                </l:HorizontalLayout>
                                 <upload:UploadSet id="financialUpload"
                                                 maxFileNameLength="100"
                                                 maxFileSize="5"
                                                 uploadEnabled="true"
                                                 fileTypes="pdf,xls,xlsx"
                                                 uploadUrl="/upload"
-                                                mode="None">
+                                                mode="None"
+                                                afterItemAdded="onFileUploaded"
+                                                afterItemRemoved="onFileRemoved">
                                 </upload:UploadSet>
-                            </l:HorizontalLayout>
+                            </VBox>
                         </form:content>
                     </form:SimpleForm>
                 </WizardStep>
@@ -238,11 +330,31 @@
                 <!-- Step 4: Review & Submit -->
                 <WizardStep id="reviewStep"
                            title="Review &amp; Submit"
-                           validated="true">
+                           validated="true"
+                           visible="{config>/steps/review/enabled}">
                     <MessageStrip text="Please review your application before submitting."
                                  type="Information"
                                  showIcon="true"
                                  class="sapUiSmallMarginBottom"/>
+                    <Toolbar class="sapUiSmallMarginBottom">
+                        <ToolbarSpacer/>
+                        <MenuButton text="Download Application" 
+                                    icon="sap-icon://download"
+                                    buttonMode="Split"
+                                    defaultAction="onDownloadPDF"
+                                    class="sapUiTinyMarginEnd">
+                            <menu>
+                                <Menu>
+                                    <MenuItem text="Download as PDF" 
+                                            icon="sap-icon://pdf-attachment"
+                                            press="onDownloadPDF"/>
+                                    <MenuItem text="Download as Excel" 
+                                            icon="sap-icon://excel-attachment"
+                                            press="onDownloadExcel"/>
+                                </Menu>
+                            </menu>
+                        </MenuButton>
+                    </Toolbar>
                     
                     <VBox class="sapUiSmallMargin">
                         <!-- Program Info -->
@@ -251,7 +363,10 @@
                             <form:content>
                                 <core:Title text="Selected Program"/>
                                 <Label text="Program"/>
-                                <Text text="{/programName}"/>
+                                <Text text="{config>/programName}"/>
+                                
+                                <Label text="Funding Range"/>
+                                <Text text="{config>/fundingRange/min} - {config>/fundingRange/max} {config>/fundingRange/currency}"/>
                             </form:content>
                         </form:SimpleForm>
                         
@@ -263,23 +378,30 @@
                                         columnsM="1">
                             <form:content>
                                 <core:Title text="Applicant Information"/>
-                                <Label text="Full Name"/>
-                                <Text text="{/applicant/fullName}"/>
                                 
-                                <Label text="Email"/>
-                                <Text text="{/applicant/email}"/>
+                                <Label text="Full Name" visible="{config>/steps/applicantInfo/fields/fullName/visible}"/>
+                                <Text text="{/applicant/fullName}" visible="{config>/steps/applicantInfo/fields/fullName/visible}"/>
                                 
-                                <Label text="Phone"/>
-                                <Text text="{/applicant/phone}"/>
+                                <Label text="Email" visible="{config>/steps/applicantInfo/fields/email/visible}"/>
+                                <Text text="{/applicant/email}" visible="{config>/steps/applicantInfo/fields/email/visible}"/>
                                 
-                                <Label text="Date of Birth"/>
-                                <Text text="{/applicant/dateOfBirth}"/>
+                                <Label text="Phone" visible="{config>/steps/applicantInfo/fields/phone/visible}"/>
+                                <Text text="{/applicant/phone}" visible="{config>/steps/applicantInfo/fields/phone/visible}"/>
                                 
-                                <Label text="City"/>
-                                <Text text="{/applicant/city}"/>
+                                <Label text="Date of Birth" visible="{config>/steps/applicantInfo/fields/dateOfBirth/visible}"/>
+                                <Text text="{/applicant/dateOfBirth}" visible="{config>/steps/applicantInfo/fields/dateOfBirth/visible}"/>
                                 
-                                <Label text="Country"/>
-                                <Text text="{/applicant/country}"/>
+                                <Label text="Address" visible="{config>/steps/applicantInfo/fields/address/visible}"/>
+                                <Text text="{/applicant/address}" visible="{config>/steps/applicantInfo/fields/address/visible}"/>
+                                
+                                <Label text="City" visible="{config>/steps/applicantInfo/fields/city/visible}"/>
+                                <Text text="{/applicant/city}" visible="{config>/steps/applicantInfo/fields/city/visible}"/>
+                                
+                                <Label text="Country" visible="{config>/steps/applicantInfo/fields/country/visible}"/>
+                                <Text text="{/applicant/country}" visible="{config>/steps/applicantInfo/fields/country/visible}"/>
+                                
+                                <Label text="Postal Code" visible="{config>/steps/applicantInfo/fields/postalCode/visible}"/>
+                                <Text text="{/applicant/postalCode}" visible="{config>/steps/applicantInfo/fields/postalCode/visible}"/>
                             </form:content>
                         </form:SimpleForm>
                         
@@ -288,27 +410,31 @@
                                         layout="ResponsiveGridLayout">
                             <form:content>
                                 <core:Title text="Project Details"/>
-                                <Label text="Project Title"/>
-                                <Text text="{/project/title}"/>
                                 
-                                <Label text="Description"/>
-                                <Text text="{/project/description}"/>
+                                <Label text="Project Title" visible="{config>/steps/projectDetails/fields/title/visible}"/>
+                                <Text text="{/project/title}" visible="{config>/steps/projectDetails/fields/title/visible}"/>
                                 
-                                <Label text="Funding Amount"/>
-                                <Text text="{/project/fundingAmount} RWF"/>
+                                <Label text="Description" visible="{config>/steps/projectDetails/fields/description/visible}"/>
+                                <Text text="{/project/description}" visible="{config>/steps/projectDetails/fields/description/visible}"/>
                                 
-                                <Label text="Duration"/>
-                                <Text text="{/project/duration} months"/>
+                                <Label text="Funding Amount" visible="{config>/steps/projectDetails/fields/fundingAmount/visible}"/>
+                                <Text text="{/project/fundingAmount} RWF" visible="{config>/steps/projectDetails/fields/fundingAmount/visible}"/>
                                 
-                                <Label text="Category"/>
-                                <Text text="{/project/category}"/>
+                                <Label text="Duration" visible="{config>/steps/projectDetails/fields/duration/visible}"/>
+                                <Text text="{/project/duration} months" visible="{config>/steps/projectDetails/fields/duration/visible}"/>
                                 
-                                <Label text="Start Date"/>
-                                <Text text="{/project/startDate}"/>
+                                <Label text="Category" visible="{config>/steps/projectDetails/fields/category/visible}"/>
+                                <Text text="{/project/category}" visible="{config>/steps/projectDetails/fields/category/visible}"/>
+                                
+                                <Label text="Start Date" visible="{config>/steps/projectDetails/fields/startDate/visible}"/>
+                                <Text text="{/project/startDate}" visible="{config>/steps/projectDetails/fields/startDate/visible}"/>
+                                
+                                <Label text="Documents Uploaded"/>
+                                <Text text="{/uploadedDocuments}"/>
                             </form:content>
                         </form:SimpleForm>
                         
-                        <VBox class="sapUiMediumMarginTop">
+                        <VBox class="sapUiMediumMarginTop" visible="{config>/steps/review/termsAndConditions}">
                             <CheckBox id="termsCheckBox"
                                      text="I agree to the terms and conditions and confirm that all information provided is accurate"
                                      selected="{/termsAccepted}"

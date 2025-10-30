@@ -13,7 +13,9 @@
       "unit": "years"
     },
     "registrationRequired": true,
-    "country": ["RW"],
+    "country": [
+      "RW"
+    ],
     "requirements": [
       "Clear business plan",
       "Growth potential",
@@ -29,30 +31,90 @@
       "enabled": true,
       "required": true,
       "fields": {
-        "fullName": {"required": true, "visible": true},
-        "email": {"required": true, "visible": true},
-        "phone": {"required": true, "visible": true},
-        "dateOfBirth": {"required": true, "visible": true},
-        "address": {"required": false, "visible": true},
-        "city": {"required": true, "visible": true},
-        "country": {"required": true, "visible": true},
-        "postalCode": {"required": false, "visible": true}
+        "fullName": {
+          "required": true,
+          "visible": true
+        },
+        "email": {
+          "required": true,
+          "visible": true
+        },
+        "phone": {
+          "required": true,
+          "visible": true
+        },
+        "dateOfBirth": {
+          "required": true,
+          "visible": true
+        },
+        "address": {
+          "required": false,
+          "visible": true
+        },
+        "city": {
+          "required": true,
+          "visible": true
+        },
+        "country": {
+          "required": true,
+          "visible": true
+        },
+        "postalCode": {
+          "required": false,
+          "visible": true
+        }
       }
     },
     "projectDetails": {
       "enabled": true,
       "required": true,
       "fields": {
-        "title": {"required": true, "visible": true},
-        "description": {"required": true, "visible": true, "minLength": 100},
-        "fundingAmount": {"required": true, "visible": true},
-        "duration": {"required": true, "visible": true, "max": 24},
-        "category": {"required": true, "visible": true},
-        "startDate": {"required": true, "visible": true}
+        "title": {
+          "required": true,
+          "visible": true
+        },
+        "description": {
+          "required": true,
+          "visible": true,
+          "minLength": 2
+        },
+        "fundingAmount": {
+          "required": true,
+          "visible": true
+        },
+        "duration": {
+          "required": true,
+          "visible": true,
+          "max": 24
+        },
+        "category": {
+          "required": true,
+          "visible": true
+        },
+        "startDate": {
+          "required": true,
+          "visible": true
+        }
       },
       "documents": {
-        "businessPlan": {"required": true, "maxSize": 5, "formats": ["pdf", "doc", "docx"]},
-        "financialStatements": {"required": false, "maxSize": 5, "formats": ["pdf", "xls", "xlsx"]}
+        "businessPlan": {
+          "required": true,
+          "maxSize": 5,
+          "formats": [
+            "pdf",
+            "doc",
+            "docx"
+          ]
+        },
+        "financialStatements": {
+          "required": false,
+          "maxSize": 5,
+          "formats": [
+            "pdf",
+            "xls",
+            "xlsx"
+          ]
+        }
       }
     },
     "review": {

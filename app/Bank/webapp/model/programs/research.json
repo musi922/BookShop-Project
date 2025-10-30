@@ -3,7 +3,7 @@
   "programName": "Research & Development Grant",
   "description": "Funding for research and development projects in strategic sectors including agriculture, health, and technology.",
   "fundingRange": {
-    "min": 15000000,
+    "min": 1500000,
     "max": 150000000,
     "currency": "RWF"
   },
@@ -45,7 +45,7 @@
       "required": true,
       "fields": {
         "title": {"required": true, "visible": true},
-        "description": {"required": true, "visible": true, "minLength": 250},
+        "description": {"required": false},
         "fundingAmount": {"required": true, "visible": true},
         "duration": {"required": true, "visible": true, "max": 48},
         "category": {"required": true, "visible": true},
