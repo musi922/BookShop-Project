@@ -1,0 +1,9 @@
+node_modules
+gen
+mta_archives
+dist
+*.mtar
+app/dist
+app/Bank/dist
+resources
+test

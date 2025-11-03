@@ -1,0 +1,133 @@
+name: Naming Convention Check
+
+on:
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  check-naming:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check Branch Naming
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+          echo "Checking branch name: $BRANCH_NAME"
+          
+          # Valid patterns: feature/*, bugfix/*, hotfix/*, release/*
+          if [[ $BRANCH_NAME =~ ^(feature|bugfix|hotfix|release|chore)/[a-z0-9-]+$ ]]; then
+            echo "✓ Branch name follows convention"
+          else
+            echo "✗ Branch name does not follow convention"
+            echo "Expected format: feature/*, bugfix/*, hotfix/*, release/*, chore/*"
+            echo "Example: feature/add-login-page"
+            exit 1
+          fi
+
+      - name: Check File Naming Convention
+        run: |
+          echo "Checking file naming conventions..."
+          
+          # Get changed files
+          git fetch origin ${{ github.base_ref }}
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          
+          ERRORS=0
+          
+          # Check CDS files (should be kebab-case)
+          for file in $(echo "$CHANGED_FILES" | grep -E '\.cds$' || true); do
+            filename=$(basename "$file" .cds)
+            if [[ ! $filename =~ ^[a-z][a-z0-9-]*$ ]]; then
+              echo "✗ CDS file should use kebab-case: $file"
+              ERRORS=$((ERRORS + 1))
+            fi
+          done
+          
+          # Check JS controller files (should be PascalCase for UI5)
+          for file in $(echo "$CHANGED_FILES" | grep -E 'controller/.*\.js$' || true); do
+            filename=$(basename "$file" .js)
+            if [[ ! $filename =~ ^[A-Z][A-Za-z0-9]*$ ]] && [[ ! $filename =~ ^[A-Z][A-Za-z0-9]*\.controller$ ]]; then
+              echo "Warning: Controller file should use PascalCase: $file"
+            fi
+          done
+          
+          # Check view files (should be PascalCase)
+          for file in $(echo "$CHANGED_FILES" | grep -E 'view/.*\.xml$' || true); do
+            filename=$(basename "$file" .xml)
+            if [[ ! $filename =~ ^[A-Z][A-Za-z0-9]*$ ]]; then
+              echo "Warning: View file should use PascalCase: $file"
+            fi
+          done
+          
+          if [ $ERRORS -gt 0 ]; then
+            echo "Found $ERRORS naming convention errors"
+            exit 1
+          fi
+          
+          echo "✓ All file names follow conventions"
+
+      - name: Check for Proper Folder Structure
+        run: |
+          echo "Validating folder structure..."
+          
+          # Check if new files are in correct locations
+          git fetch origin ${{ github.base_ref }}
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          
+          for file in $CHANGED_FILES; do
+            # Check CDS files are in srv/
+            if [[ $file =~ \.cds$ ]] && [[ ! $file =~ ^(srv|db)/ ]] && [[ ! $file =~ ^app/.*/webapp/annotations/ ]]; then
+              echo "Warning: CDS files should typically be in srv/ or db/: $file"
+            fi
+            
+            # Check UI5 controllers are in controller/
+            if [[ $file =~ \.controller\.js$ ]] && [[ ! $file =~ /controller/ ]]; then
+              echo "✗ Controller files must be in controller/ folder: $file"
+              exit 1
+            fi
+            
+            # Check UI5 views are in view/
+            if [[ $file =~ \.view\.xml$ ]] && [[ ! $file =~ /view/ ]]; then
+              echo "✗ View files must be in view/ folder: $file"
+              exit 1
+            fi
+          done
+          
+          echo "✓ Folder structure is correct"
+
+      - name: Check Entity Naming in CDS
+        run: |
+          echo "Checking CDS entity naming conventions..."
+          
+          git fetch origin ${{ github.base_ref }}
+          CHANGED_CDS=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -E '\.cds$' || true)
+          
+          if [ -z "$CHANGED_CDS" ]; then
+            echo "No CDS files changed"
+            exit 0
+          fi
+          
+          for file in $CHANGED_CDS; do
+            # Check for PascalCase entity names
+            if grep -E "entity [a-z]" "$file" > /dev/null 2>&1; then
+              echo "Warning: Entities should use PascalCase in $file"
+            fi
+          done
+          
+          echo "✓ CDS naming check completed"
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "================================"
+          echo "Naming Convention Check Complete"
+          echo "================================"
+          echo "Branch: ${{ github.head_ref }}"
+          echo "Target: ${{ github.base_ref }}"

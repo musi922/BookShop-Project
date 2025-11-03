@@ -8,7 +8,7 @@ sap.ui.define([
 
     return Controller.extend("com.study.controller.BookDetail", {
         onInit: function() {
-            var oRouter = this.getOwnerComponent().getRouter();
+            let oRouter = this.getOwnerComponent().getRouter();
             oRouter.getRoute("bookDetail").attachPatternMatched(this._onObjectMatched, this);
             
             // Initialize edit mode state
@@ -18,7 +18,7 @@ sap.ui.define([
         },
 
         _onObjectMatched: function(oEvent) {
-            var sBookId = oEvent.getParameter("arguments").bookId;
+            let sBookId = oEvent.getParameter("arguments").bookId;
             
             // Bind the view to the specific book - OData V2 style
             this.getView().bindElement({
@@ -34,14 +34,14 @@ sap.ui.define([
                         this.getView().setBusy(false);
                         
                         // Check if data was received successfully
-                        var oData = oEvent.getParameter("data");
+                        let oData = oEvent.getParameter("data");
                         if (!oData) {
                             MessageBox.error("Book not found");
                             this.onNavBack();
                         }
                     }.bind(this),
-                    change: function(oEvent) {
-                        var oContext = this.getView().getBindingContext();
+                    change: function() {
+                        let oContext = this.getView().getBindingContext();
                         if (!oContext) {
                             MessageBox.error("Book not found");
                             this.onNavBack();
@@ -52,24 +52,24 @@ sap.ui.define([
         },
 
         onNavBack: function() {
-            var oRouter = this.getOwnerComponent().getRouter();
+            let oRouter = this.getOwnerComponent().getRouter();
             oRouter.navTo("RouteBooks", {}, true);
         },
 
         onEdit: function() {
-            var oViewModel = this.getView().getModel("view");
+            let oViewModel = this.getView().getModel("view");
             oViewModel.setProperty("/editMode", true);
             
             // Store original data for cancel
-            var oContext = this.getView().getBindingContext();
+            let oContext = this.getView().getBindingContext();
             if (oContext) {
                 this._oOriginalData = Object.assign({}, oContext.getObject());
             }
         },
 
         onSave: function() {
-            var oModel = this.getView().getModel();
-            var oContext = this.getView().getBindingContext();
+            let oModel = this.getView().getModel();
+            let oContext = this.getView().getBindingContext();
             
             if (!oContext) {
                 MessageBox.error("No data to save");
@@ -77,7 +77,7 @@ sap.ui.define([
             }
             
             // Validate data
-            var oData = oContext.getObject();
+            let oData = oContext.getObject();
             if (!oData.title || oData.title.trim() === "") {
                 MessageBox.error("Title cannot be empty");
                 return;
@@ -101,10 +101,10 @@ sap.ui.define([
                     this._oOriginalData = null;
                 }.bind(this),
                 error: function(oError) {
-                    var sMessage = "Failed to update book";
+                    let sMessage = "Failed to update book";
                     if (oError.responseText) {
                         try {
-                            var oErrorResponse = JSON.parse(oError.responseText);
+                            let oErrorResponse = JSON.parse(oError.responseText);
                             sMessage = oErrorResponse.error.message.value || sMessage;
                         } catch (e) {
                             // Use default message
@@ -116,7 +116,7 @@ sap.ui.define([
         },
 
         onCancel: function() {
-            var oModel = this.getView().getModel();
+            let oModel = this.getView().getModel();
             
             // OData V2: Reset changes
             oModel.resetChanges();
@@ -128,14 +128,14 @@ sap.ui.define([
         },
 
         onDelete: function() {
-            var oContext = this.getView().getBindingContext();
+            let oContext = this.getView().getBindingContext();
             
             if (!oContext) {
                 MessageBox.error("No book to delete");
                 return;
             }
             
-            var oBook = oContext.getObject();
+            let oBook = oContext.getObject();
             
             MessageBox.confirm(
                 "Are you sure you want to delete '" + oBook.title + "'?",
@@ -151,8 +151,8 @@ sap.ui.define([
         },
 
         _deleteBook: function(oContext) {
-            var oModel = this.getView().getModel();
-            var sPath = oContext.getPath();
+            let oModel = this.getView().getModel();
+            let sPath = oContext.getPath();
             
             // OData V2: Use remove method
             oModel.remove(sPath, {
@@ -161,10 +161,10 @@ sap.ui.define([
                     this.onNavBack();
                 }.bind(this),
                 error: function(oError) {
-                    var sMessage = "Failed to delete book";
+                    let sMessage = "Failed to delete book";
                     if (oError.responseText) {
                         try {
-                            var oErrorResponse = JSON.parse(oError.responseText);
+                            let oErrorResponse = JSON.parse(oError.responseText);
                             sMessage = oErrorResponse.error.message.value || sMessage;
                         } catch (e) {
                             // Use default message

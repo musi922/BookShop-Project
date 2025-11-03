@@ -6,10 +6,11 @@ sap.ui.define([
     "sap/ui/core/Fragment"
 ], function (Controller, MessageToast, MessageBox, JSONModel, Fragment) {
     "use strict";
+        /* global XLSX, pdfjsLib, mammoth, Tesseract */
 
     return Controller.extend("com.study.controller.Books", {
         onInit: function () {
-            var oRouter = this.getOwnerComponent().getRouter();
+            let oRouter = this.getOwnerComponent().getRouter();
             oRouter.getRoute("RouteBooks").attachPatternMatched(this._onRouteMatched, this);
 
             // Initialize model for new book data
@@ -27,7 +28,7 @@ sap.ui.define([
             this._initNotificationModel();
 
             // Wait for the model to be available before loading notifications
-            var oModel = this.getOwnerComponent().getModel();
+            let oModel = this.getOwnerComponent().getModel();
             if (oModel) {
                 // Model is already available
                 oModel.metadataLoaded().then(function() {
@@ -43,7 +44,7 @@ sap.ui.define([
             }
         },
         onAuthorNavigate: function () {
-            var oRouter = this.getOwnerComponent().getRouter();
+            let oRouter = this.getOwnerComponent().getRouter();
             oRouter.navTo("authors")
         },
 
@@ -58,7 +59,7 @@ sap.ui.define([
         },
 
         _initNotificationModel: function () {
-            var oNotificationModel = new JSONModel({
+            let oNotificationModel = new JSONModel({
                 notifications: [],
                 unreadCount: 0
             });
@@ -66,8 +67,8 @@ sap.ui.define([
         },
 
         _loadNotifications: function () {
-            var oModel = this.getView().getModel();
-            var oNotificationModel = this.getView().getModel("notificationModel");
+            let oModel = this.getView().getModel();
+            let oNotificationModel = this.getView().getModel("notificationModel");
 
             // Check if model exists
             if (!oModel) {
@@ -82,8 +83,8 @@ sap.ui.define([
                     "$top": "50"
                 },
                 success: function (oData) {
-                    var aNotifications = oData.results || [];
-                    var iUnreadCount = aNotifications.filter(function(n) {
+                    let aNotifications = oData.results || [];
+                    let iUnreadCount = aNotifications.filter(function(n) {
                         return !n.isRead;
                     }).length;
 
@@ -101,9 +102,9 @@ sap.ui.define([
         },
 
         _updateNotificationBadge: function (iCount) {
-            var oButton = this.byId("notificationBtn");
+            let oButton = this.byId("notificationBtn");
             if (oButton) {
-                var oDomRef = oButton.getDomRef();
+                let oDomRef = oButton.getDomRef();
                 if (oDomRef) {
                     oDomRef.setAttribute("data-badge", iCount > 0 ? iCount : "0");
                 }
@@ -111,8 +112,8 @@ sap.ui.define([
         },
 
         onOpenNotifications: function (oEvent) {
-            var oButton = oEvent.getSource();
-            var oView = this.getView();
+            let oButton = oEvent.getSource();
+            let oView = this.getView();
 
             if (!this._pNotificationPopover) {
                 this._pNotificationPopover = Fragment.load({
@@ -138,17 +139,17 @@ sap.ui.define([
         },
 
         onNotificationPress: function (oEvent) {
-            var oItem = oEvent.getSource();
-            var sNotificationId = oItem.data("notificationId");
-            var sRelatedEntity = oItem.data("relatedEntity");
-            var sRelatedEntityId = oItem.data("relatedEntityId");
+            let oItem = oEvent.getSource();
+            let sNotificationId = oItem.data("notificationId");
+            let sRelatedEntity = oItem.data("relatedEntity");
+            let sRelatedEntityId = oItem.data("relatedEntityId");
 
             // Mark as read
             this._markNotificationAsRead(sNotificationId);
 
             // Navigate to related entity if applicable
             if (sRelatedEntity === "Books" && sRelatedEntityId) {
-                var oRouter = this.getOwnerComponent().getRouter();
+                let oRouter = this.getOwnerComponent().getRouter();
                 oRouter.navTo("bookDetail", {
                     bookId: sRelatedEntityId
                 });
@@ -159,15 +160,15 @@ sap.ui.define([
         },
 
         onNotificationClose: function (oEvent) {
-            var oItem = oEvent.getSource();
-            var sNotificationId = oItem.data("notificationId");
+            let oItem = oEvent.getSource();
+            let sNotificationId = oItem.data("notificationId");
 
             // Delete notification
             this._deleteNotification(sNotificationId);
         },
 
         _markNotificationAsRead: function (sNotificationId) {
-            var oModel = this.getView().getModel();
+            let oModel = this.getView().getModel();
 
             oModel.update("/Notifications('" + sNotificationId + "')", {
                 isRead: true
@@ -182,30 +183,30 @@ sap.ui.define([
         },
 
         _deleteNotification: function (sNotificationId) {
-            var oModel = this.getView().getModel();
+            let oModel = this.getView().getModel();
 
             oModel.remove("/Notifications('" + sNotificationId + "')", {
                 success: function () {
                     this._loadNotifications();
                     MessageToast.show("Notification removed");
                 }.bind(this),
-                error: function (oError) {
+                error: function () {
                     MessageBox.error("Failed to delete notification");
                 }
             });
         },
 
         onMarkAllAsRead: function () {
-            var oModel = this.getView().getModel();
-            var aNotifications = this.getView().getModel("notificationModel").getProperty("/notifications");
-            var aUnread = aNotifications.filter(function(n) { return !n.isRead; });
+            let oModel = this.getView().getModel();
+            let aNotifications = this.getView().getModel("notificationModel").getProperty("/notifications");
+            let aUnread = aNotifications.filter(function(n) { return !n.isRead; });
 
             if (aUnread.length === 0) {
                 MessageToast.show("No unread notifications");
                 return;
             }
 
-            var iProcessed = 0;
+            let iProcessed = 0;
             
             aUnread.forEach(function(oNotification) {
                 oModel.update("/Notifications('" + oNotification.ID + "')", {
@@ -223,7 +224,7 @@ sap.ui.define([
         },
 
         onClearAllNotifications: function () {
-            var that = this;
+            let that = this;
             
             MessageBox.confirm("Are you sure you want to delete all notifications?", {
                 onClose: function (oAction) {
@@ -235,15 +236,15 @@ sap.ui.define([
         },
 
         _clearAllNotifications: function () {
-            var oModel = this.getView().getModel();
-            var aNotifications = this.getView().getModel("notificationModel").getProperty("/notifications");
+            let oModel = this.getView().getModel();
+            let aNotifications = this.getView().getModel("notificationModel").getProperty("/notifications");
 
             if (aNotifications.length === 0) {
                 MessageToast.show("No notifications to clear");
                 return;
             }
 
-            var iProcessed = 0;
+            let iProcessed = 0;
             
             aNotifications.forEach(function(oNotification) {
                 oModel.remove("/Notifications('" + oNotification.ID + "')", {
@@ -259,7 +260,7 @@ sap.ui.define([
         },
 
         formatNotificationPriority: function (sPriority) {
-            var mPriorityMap = {
+            let mPriorityMap = {
                 "urgent": "High",
                 "high": "High",
                 "normal": "Medium",
@@ -269,7 +270,7 @@ sap.ui.define([
         },
 
         _initUploadModel: function () {
-            var oUploadModel = new JSONModel({
+            let oUploadModel = new JSONModel({
                 uploadType: "excel",
                 allowMultiple: false,
                 allowedTypes: ["xlsx", "xls"],
@@ -292,7 +293,7 @@ sap.ui.define([
         },
 
         _onRouteMatched: function () {
-            var oSmartTable = this.byId("booksSmartTable");
+            let oSmartTable = this.byId("booksSmartTable");
             if (oSmartTable) {
                 oSmartTable.rebindTable();
             }
@@ -301,17 +302,17 @@ sap.ui.define([
             this._loadNotifications();
         },
 
-        onBeforeRebindTable: function (oEvent) {
+        onBeforeRebindTable: function () {
             // Custom filters can be added here if needed
         },
 
         onSelectionChange: function (oEvent) {
-            var oItem = oEvent.getParameter("listItem");
+            let oItem = oEvent.getParameter("listItem");
             if (oItem) {
-                var oContext = oItem.getBindingContext();
-                var oBook = oContext.getObject();
+                let oContext = oItem.getBindingContext();
+                let oBook = oContext.getObject();
 
-                var oRouter = this.getOwnerComponent().getRouter();
+                let oRouter = this.getOwnerComponent().getRouter();
                 oRouter.navTo("bookDetail", {
                     bookId: oBook.ID
                 });
@@ -319,11 +320,11 @@ sap.ui.define([
         },
 
         onItemPress: function (oEvent) {
-            var oItem = oEvent.getSource();
-            var oContext = oItem.getBindingContext();
-            var oBook = oContext.getObject();
+            let oItem = oEvent.getSource();
+            let oContext = oItem.getBindingContext();
+            let oBook = oContext.getObject();
 
-            var oRouter = this.getOwnerComponent().getRouter();
+            let oRouter = this.getOwnerComponent().getRouter();
             oRouter.navTo("bookDetail", {
                 bookId: oBook.ID
             });
@@ -331,7 +332,7 @@ sap.ui.define([
 
         // ========== UPLOAD DIALOG ==========
         onOpenUploadDialog: function () {
-            var oView = this.getView();
+            let oView = this.getView();
 
             if (!this._pUploadDialog) {
                 this._pUploadDialog = Fragment.load({
@@ -357,7 +358,7 @@ sap.ui.define([
         },
 
         _resetUploadModel: function () {
-            var oModel = this.getView().getModel("uploadModel");
+            let oModel = this.getView().getModel("uploadModel");
             oModel.setProperty("/files", []);
             oModel.setProperty("/hasFiles", false);
             oModel.setProperty("/uploading", false);
@@ -366,15 +367,15 @@ sap.ui.define([
             oModel.setProperty("/previewData", []);
 
             // Reset file uploader
-            var oFileUploader = this.byId("fileUploader");
+            let oFileUploader = this.byId("fileUploader");
             if (oFileUploader) {
                 oFileUploader.clear();
             }
         },
 
         onUploadTypeChange: function (oEvent) {
-            var sKey = oEvent.getParameter("key");
-            var oModel = this.getView().getModel("uploadModel");
+            let sKey = oEvent.getParameter("key");
+            let oModel = this.getView().getModel("uploadModel");
 
             switch (sKey) {
                 case "excel":
@@ -410,22 +411,21 @@ sap.ui.define([
         },
 
         onFileChange: function (oEvent) {
-            var oFileUploader = oEvent.getSource();
-            var aFiles = oEvent.getParameter("files");
-            var oModel = this.getView().getModel("uploadModel");
-            var sUploadType = oModel.getProperty("/uploadType");
+            let aFiles = oEvent.getParameter("files");
+            let oModel = this.getView().getModel("uploadModel");
+            let sUploadType = oModel.getProperty("/uploadType");
 
             if (!aFiles || aFiles.length === 0) {
                 oModel.setProperty("/hasFiles", false);
                 return;
             }
 
-            var aFileData = [];
+            let aFileData = [];
 
-            for (var i = 0; i < aFiles.length; i++) {
-                var oFile = aFiles[i];
-                var sFileSize = this._formatFileSize(oFile.size);
-                var sIcon = this._getFileIcon(oFile.name);
+            for (let i = 0; i < aFiles.length; i++) {
+                let oFile = aFiles[i];
+                let sFileSize = this._formatFileSize(oFile.size);
+                let sIcon = this._getFileIcon(oFile.name);
 
                 aFileData.push({
                     name: oFile.name,
@@ -446,7 +446,7 @@ sap.ui.define([
         },
 
         _parseExcelFile: function (oFile) {
-            var oModel = this.getView().getModel("uploadModel");
+            let oModel = this.getView().getModel("uploadModel");
 
             // Check if XLSX library is available
             if (typeof XLSX === "undefined") {
@@ -454,22 +454,22 @@ sap.ui.define([
                 return;
             }
 
-            var reader = new FileReader();
+            let reader = new FileReader();
 
             reader.onload = function (e) {
                 try {
-                    var data = new Uint8Array(e.target.result);
-                    var workbook = XLSX.read(data, { type: 'array' });
-                    var firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                    var jsonData = XLSX.utils.sheet_to_json(firstSheet);
+                    let data = new Uint8Array(e.target.result);
+                    let workbook = XLSX.read(data, { type: 'array' });
+                    let firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    let jsonData = XLSX.utils.sheet_to_json(firstSheet);
 
                     // Validate and prepare preview data
-                    var aPreviewData = [];
-                    var iPreviewLimit = Math.min(5, jsonData.length);
+                    let aPreviewData = [];
+                    let iPreviewLimit = Math.min(5, jsonData.length);
 
-                    for (var i = 0; i < iPreviewLimit; i++) {
-                        var oRow = jsonData[i];
-                        var bValid = this._validateBookRow(oRow);
+                    for (let i = 0; i < iPreviewLimit; i++) {
+                        let oRow = jsonData[i];
+                        let bValid = this._validateBookRow(oRow);
 
                         aPreviewData.push({
                             title: oRow.title || "",
@@ -509,8 +509,8 @@ sap.ui.define([
         },
 
         onStartUpload: function () {
-            var oModel = this.getView().getModel("uploadModel");
-            var sUploadType = oModel.getProperty("/uploadType");
+            let oModel = this.getView().getModel("uploadModel");
+            let sUploadType = oModel.getProperty("/uploadType");
 
             // Show uploading state
             oModel.setProperty("/uploading", true);
@@ -525,23 +525,23 @@ sap.ui.define([
         },
 
         _handleExcelUpload: function () {
-            var oFileUploader = this.byId("fileUploader");
-            var oFile = oFileUploader.oFileUpload.files[0];
+            let oFileUploader = this.byId("fileUploader");
+            let oFile = oFileUploader.oFileUpload.files[0];
 
             if (!oFile) {
                 MessageBox.error("Please select a file");
                 return;
             }
 
-            var reader = new FileReader();
-            var oModel = this.getView().getModel("uploadModel");
+            let reader = new FileReader();
+            let oModel = this.getView().getModel("uploadModel");
 
             reader.onload = function (e) {
                 try {
-                    var data = new Uint8Array(e.target.result);
-                    var workbook = XLSX.read(data, { type: 'array' });
-                    var firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                    var jsonData = XLSX.utils.sheet_to_json(firstSheet);
+                    let data = new Uint8Array(e.target.result);
+                    let workbook = XLSX.read(data, { type: 'array' });
+                    let firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    let jsonData = XLSX.utils.sheet_to_json(firstSheet);
 
                     // Process books
                     this._createBooksFromExcel(jsonData);
@@ -561,27 +561,27 @@ sap.ui.define([
         },
 
         _createBooksFromExcel: function (aData) {
-            var oMainModel = this.getView().getModel();
-            var oUploadModel = this.getView().getModel("uploadModel");
+            let oMainModel = this.getView().getModel();
+            let oUploadModel = this.getView().getModel("uploadModel");
 
-            var iTotal = aData.length;
-            var iSuccess = 0;
-            var iError = 0;
-            var aErrors = [];
+            let iTotal = aData.length;
+            let iSuccess = 0;
+            let iError = 0;
+            let aErrors = [];
 
-            var fnProcessNext = function (index) {
+            let fnProcessNext = function (index) {
                 if (index >= iTotal) {
                     // All done
                     oUploadModel.setProperty("/uploading", false);
                     oUploadModel.setProperty("/uploadProgress", 100);
 
-                    var sMessage = iSuccess + " book(s) created successfully";
+                    let sMessage = iSuccess + " book(s) created successfully";
                     if (iError > 0) {
                         sMessage += ", " + iError + " failed";
                     }
 
                     // Refresh table
-                    var oSmartTable = this.byId("booksSmartTable");
+                    let oSmartTable = this.byId("booksSmartTable");
                     if (oSmartTable) {
                         oSmartTable.rebindTable();
                     }
@@ -609,8 +609,8 @@ sap.ui.define([
                     return;
                 }
 
-                var oRow = aData[index];
-                var iProgress = Math.round((index / iTotal) * 100);
+                let oRow = aData[index];
+                let iProgress = Math.round((index / iTotal) * 100);
                 oUploadModel.setProperty("/uploadProgress", iProgress);
                 oUploadModel.setProperty("/uploadProgressText", iProgress + "% (" + (index + 1) + "/" + iTotal + ")");
 
@@ -623,7 +623,7 @@ sap.ui.define([
                 }
 
                 // Create book entry
-                var oEntry = {
+                let oEntry = {
                     title: oRow.title.toString(),
                     author_ID: oRow.author_ID.toString(),
                     price: parseFloat(oRow.price).toString(),
@@ -637,9 +637,9 @@ sap.ui.define([
                     }.bind(this),
                     error: function (oError) {
                         iError++;
-                        var sErrorMsg = "Row " + (index + 1) + " (" + oRow.title + "): ";
+                        let sErrorMsg = "Row " + (index + 1) + " (" + oRow.title + "): ";
                         try {
-                            var oErrorResponse = JSON.parse(oError.responseText);
+                            let oErrorResponse = JSON.parse(oError.responseText);
                             sErrorMsg += oErrorResponse.error.message.value;
                         } catch (e) {
                             sErrorMsg += "Failed to create";
@@ -656,12 +656,12 @@ sap.ui.define([
         },
 
         // _handleFileUpload: function () {
-        //     var oFileUploader = this.byId("fileUploader");
-        //     var oModel = this.getView().getModel("uploadModel");
+        //     let oFileUploader = this.byId("fileUploader");
+        //     let oModel = this.getView().getModel("uploadModel");
 
         //     // Simulate upload for now (replace with actual backend call)
-        //     var iProgress = 0;
-        //     var oInterval = setInterval(function () {
+        //     let iProgress = 0;
+        //     let oInterval = setInterval(function () {
         //         iProgress += 10;
         //         oModel.setProperty("/uploadProgress", iProgress);
         //         oModel.setProperty("/uploadProgressText", iProgress + "%");
@@ -682,10 +682,10 @@ sap.ui.define([
         // },
 
         _handleFileUpload: function () {
-            var oFileUploader = this.byId("fileUploader");
-            var oFiles = oFileUploader.oFileUpload.files;
-            var oModel = this.getView().getModel("uploadModel");
-            var sUploadType = oModel.getProperty("/uploadType");
+            let oFileUploader = this.byId("fileUploader");
+            let oFiles = oFileUploader.oFileUpload.files;
+            let oModel = this.getView().getModel("uploadModel");
+            let sUploadType = oModel.getProperty("/uploadType");
 
             if (!oFiles || oFiles.length === 0) {
                 MessageBox.error("Please select a file");
@@ -701,14 +701,13 @@ sap.ui.define([
         },
 
         _handleDocumentUpload: function (oFiles) {
-            var oModel = this.getView().getModel("uploadModel");
-            var aAllBooks = [];
-            var iFilesProcessed = 0;
+            let oModel = this.getView().getModel("uploadModel");
+            let aAllBooks = [];
 
             oModel.setProperty("/uploadProgress", 10);
             oModel.setProperty("/uploadProgressText", "10% - Reading files...");
 
-            var fnProcessNextFile = function (index) {
+            let fnProcessNextFile = function (index) {
                 if (index >= oFiles.length) {
                     // All files read, now create books
                     if (aAllBooks.length > 0) {
@@ -720,9 +719,9 @@ sap.ui.define([
                     return;
                 }
 
-                var oFile = oFiles[index];
-                var sFileName = oFile.name.toLowerCase();
-                var iProgressBase = 10 + (index / oFiles.length) * 40; // 10-50% for reading files
+                let oFile = oFiles[index];
+                let sFileName = oFile.name.toLowerCase();
+                let iProgressBase = 10 + (index / oFiles.length) * 40; // 10-50% for reading files
                 oModel.setProperty("/uploadProgress", Math.round(iProgressBase));
                 oModel.setProperty("/uploadProgressText", Math.round(iProgressBase) + "% - Reading " + oFile.name);
 
@@ -750,12 +749,12 @@ sap.ui.define([
         },
 
         _parseTextFile: function (oFile, fnCallback) {
-            var reader = new FileReader();
+            let reader = new FileReader();
 
             reader.onload = function (e) {
                 try {
-                    var sText = e.target.result;
-                    var aBooks = this._extractBooksFromText(sText);
+                    let sText = e.target.result;
+                    let aBooks = this._extractBooksFromText(sText);
                     fnCallback(aBooks);
                 } catch (error) {
                     MessageBox.warning("Failed to parse " + oFile.name + ": " + error.message);
@@ -779,27 +778,27 @@ sap.ui.define([
                 return;
             }
 
-            var reader = new FileReader();
+            let reader = new FileReader();
 
             reader.onload = function (e) {
-                var typedarray = new Uint8Array(e.target.result);
+                let typedarray = new Uint8Array(e.target.result);
 
                 pdfjsLib.getDocument(typedarray).promise.then(function (pdf) {
-                    var numPages = pdf.numPages;
-                    var sAllText = "";
-                    var iPagesProcessed = 0;
+                    let numPages = pdf.numPages;
+                    let sAllText = "";
+                    let iPagesProcessed = 0;
 
-                    var fnProcessPage = function (pageNum) {
+                    let fnProcessPage = function (pageNum) {
                         pdf.getPage(pageNum).then(function (page) {
                             page.getTextContent().then(function (textContent) {
-                                var pageText = textContent.items.map(function (item) {
+                                let pageText = textContent.items.map(function (item) {
                                     return item.str;
                                 }).join(' ');
                                 sAllText += pageText + "\n";
 
                                 iPagesProcessed++;
                                 if (iPagesProcessed === numPages) {
-                                    var aBooks = this._extractBooksFromText(sAllText);
+                                    let aBooks = this._extractBooksFromText(sAllText);
                                     fnCallback(aBooks);
                                 } else if (pageNum < numPages) {
                                     fnProcessPage(pageNum + 1);
@@ -831,13 +830,13 @@ sap.ui.define([
                 return;
             }
 
-            var reader = new FileReader();
+            let reader = new FileReader();
 
             reader.onload = function (e) {
                 mammoth.extractRawText({ arrayBuffer: e.target.result })
                     .then(function (result) {
-                        var sText = result.value;
-                        var aBooks = this._extractBooksFromText(sText);
+                        let sText = result.value;
+                        let aBooks = this._extractBooksFromText(sText);
                         fnCallback(aBooks);
                     }.bind(this))
                     .catch(function (error) {
@@ -855,15 +854,15 @@ sap.ui.define([
         },
 
         _extractBooksFromText: function (sText) {
-            var aBooks = [];
-            var aLines = sText.split('\n');
+            let aBooks = [];
+            let aLines = sText.split('\n');
             
             // Look for table headers with our required columns
-            var iHeaderIndex = -1;
-            var oColumnIndices = {};
+            let iHeaderIndex = -1;
+            let oColumnIndices = {};
 
-            for (var i = 0; i < aLines.length; i++) {
-                var sLine = aLines[i].toLowerCase().trim();
+            for (let i = 0; i < aLines.length; i++) {
+                let sLine = aLines[i].toLowerCase().trim();
                 
                 // Check if this line contains all required column headers
                 if (sLine.includes('title') && 
@@ -874,9 +873,9 @@ sap.ui.define([
                     iHeaderIndex = i;
                     
                     // Try to determine column positions (for tab/space separated values)
-                    var aHeaders = aLines[i].split(/[\t|,;]+/);
-                    for (var j = 0; j < aHeaders.length; j++) {
-                        var sHeader = aHeaders[j].toLowerCase().trim();
+                    let aHeaders = aLines[i].split(/[\t|,;]+/);
+                    for (let j = 0; j < aHeaders.length; j++) {
+                        let sHeader = aHeaders[j].toLowerCase().trim();
                         if (sHeader.includes('title')) oColumnIndices.title = j;
                         if (sHeader.includes('author')) oColumnIndices.author = j;
                         if (sHeader.includes('price')) oColumnIndices.price = j;
@@ -891,19 +890,19 @@ sap.ui.define([
             }
 
             // Parse data rows after header
-            for (var k = iHeaderIndex + 1; k < aLines.length; k++) {
-                var sDataLine = aLines[k].trim();
+            for (let k = iHeaderIndex + 1; k < aLines.length; k++) {
+                let sDataLine = aLines[k].trim();
                 
                 // Skip empty lines
                 if (!sDataLine) continue;
                 
                 // Split by common delimiters
-                var aParts = sDataLine.split(/[\t|,;]+/);
+                let aParts = sDataLine.split(/[\t|,;]+/);
                 
                 // Skip if not enough columns
                 if (aParts.length < 4) continue;
 
-                var oBook = {};
+                let oBook = {};
                 
                 // Extract values based on column indices or order
                 if (Object.keys(oColumnIndices).length === 4) {
@@ -929,7 +928,7 @@ sap.ui.define([
         },
 
         _handleImageUpload: function (oFiles) {
-            var oModel = this.getView().getModel("uploadModel");
+            let oModel = this.getView().getModel("uploadModel");
             
             // Check if Tesseract is available
             if (typeof Tesseract === "undefined") {
@@ -941,10 +940,9 @@ sap.ui.define([
                 return;
             }
 
-            var aAllBooks = [];
-            var iFilesProcessed = 0;
+            let aAllBooks = [];
 
-            var fnProcessNextFile = function (index) {
+            let fnProcessNextFile = function (index) {
                 if (index >= oFiles.length) {
                     // All files processed
                     if (aAllBooks.length > 0) {
@@ -956,8 +954,8 @@ sap.ui.define([
                     return;
                 }
 
-                var oFile = oFiles[index];
-                var iProgressBase = 10 + (index / oFiles.length) * 60; // 10-70% for OCR
+                let oFile = oFiles[index];
+                let iProgressBase = 10 + (index / oFiles.length) * 60; // 10-70% for OCR
                 oModel.setProperty("/uploadProgress", Math.round(iProgressBase));
                 oModel.setProperty("/uploadProgressText", Math.round(iProgressBase) + "% - Processing " + oFile.name);
 
@@ -967,14 +965,14 @@ sap.ui.define([
                     {
                         logger: function (m) {
                             if (m.status === 'recognizing text') {
-                                var iOCRProgress = Math.round(iProgressBase + (m.progress * (60 / oFiles.length)));
+                                let iOCRProgress = Math.round(iProgressBase + (m.progress * (60 / oFiles.length)));
                                 oModel.setProperty("/uploadProgress", iOCRProgress);
                             }
                         }
                     }
                 ).then(function (result) {
-                    var sText = result.data.text;
-                    var aBooks = this._extractBooksFromText(sText);
+                    let sText = result.data.text;
+                    let aBooks = this._extractBooksFromText(sText);
                     aAllBooks = aAllBooks.concat(aBooks);
                     fnProcessNextFile.call(this, index + 1);
                 }.bind(this)).catch(function (error) {
@@ -988,30 +986,30 @@ sap.ui.define([
         },
 
         _createBooksFromParsedData: function (aData) {
-            var oMainModel = this.getView().getModel();
-            var oUploadModel = this.getView().getModel("uploadModel");
+            let oMainModel = this.getView().getModel();
+            let oUploadModel = this.getView().getModel("uploadModel");
 
-            var iTotal = aData.length;
-            var iSuccess = 0;
-            var iError = 0;
-            var aErrors = [];
+            let iTotal = aData.length;
+            let iSuccess = 0;
+            let iError = 0;
+            let aErrors = [];
 
             oUploadModel.setProperty("/uploadProgress", 70);
             oUploadModel.setProperty("/uploadProgressText", "70% - Creating books...");
 
-            var fnProcessNext = function (index) {
+            let fnProcessNext = function (index) {
                 if (index >= iTotal) {
                     // All done
                     oUploadModel.setProperty("/uploading", false);
                     oUploadModel.setProperty("/uploadProgress", 100);
 
-                    var sMessage = iSuccess + " book(s) created successfully";
+                    let sMessage = iSuccess + " book(s) created successfully";
                     if (iError > 0) {
                         sMessage += ", " + iError + " failed";
                     }
 
                     // Refresh table
-                    var oSmartTable = this.byId("booksSmartTable");
+                    let oSmartTable = this.byId("booksSmartTable");
                     if (oSmartTable) {
                         oSmartTable.rebindTable();
                     }
@@ -1036,8 +1034,8 @@ sap.ui.define([
                     return;
                 }
 
-                var oRow = aData[index];
-                var iProgress = 70 + Math.round((index / iTotal) * 30); // 70-100% for creating
+                let oRow = aData[index];
+                let iProgress = 70 + Math.round((index / iTotal) * 30); // 70-100% for creating
                 oUploadModel.setProperty("/uploadProgress", iProgress);
                 oUploadModel.setProperty("/uploadProgressText", iProgress + "% (" + (index + 1) + "/" + iTotal + ")");
 
@@ -1050,7 +1048,7 @@ sap.ui.define([
                 }
 
                 // Create book entry
-                var oEntry = {
+                let oEntry = {
                     title: oRow.title.toString(),
                     author_ID: oRow.author_ID.toString(),
                     price: parseFloat(oRow.price).toString(),
@@ -1064,9 +1062,9 @@ sap.ui.define([
                     }.bind(this),
                     error: function (oError) {
                         iError++;
-                        var sErrorMsg = "Row " + (index + 1) + " (" + oRow.title + "): ";
+                        let sErrorMsg = "Row " + (index + 1) + " (" + oRow.title + "): ";
                         try {
-                            var oErrorResponse = JSON.parse(oError.responseText);
+                            let oErrorResponse = JSON.parse(oError.responseText);
                             sErrorMsg += oErrorResponse.error.message.value;
                         } catch (e) {
                             sErrorMsg += "Failed to create";
@@ -1083,8 +1081,8 @@ sap.ui.define([
         },
 
         onUploadComplete: function (oEvent) {
-            var oModel = this.getView().getModel("uploadModel");
-            var sResponse = oEvent.getParameter("response");
+            let oModel = this.getView().getModel("uploadModel");
+            let sResponse = oEvent.getParameter("response");
 
             oModel.setProperty("/uploading", false);
             oModel.setProperty("/uploadProgress", 100);
@@ -1101,10 +1099,9 @@ sap.ui.define([
         },
 
         onTypeMismatch: function (oEvent) {
-            var sFileName = oEvent.getParameter("fileName");
-            var sFileType = oEvent.getParameter("fileType");
-            var oModel = this.getView().getModel("uploadModel");
-            var aAllowedTypes = oModel.getProperty("/allowedTypes");
+            let sFileType = oEvent.getParameter("fileType");
+            let oModel = this.getView().getModel("uploadModel");
+            let aAllowedTypes = oModel.getProperty("/allowedTypes");
 
             MessageBox.error(
                 "File type '" + sFileType + "' is not allowed.\n" +
@@ -1113,31 +1110,30 @@ sap.ui.define([
         },
 
         onFileSizeExceed: function (oEvent) {
-            var sFileName = oEvent.getParameter("fileName");
-            var sFileSize = oEvent.getParameter("fileSize");
-            var oModel = this.getView().getModel("uploadModel");
-            var iMaxSize = oModel.getProperty("/maxFileSize");
+            let sFileName = oEvent.getParameter("fileName");
+            let oModel = this.getView().getModel("uploadModel");
+            let iMaxSize = oModel.getProperty("/maxFileSize");
 
             MessageBox.error(
                 "File '" + sFileName + "' exceeds maximum size of " + iMaxSize + "MB"
             );
         },
 
-        onRemoveFile: function (oEvent) {
+        onRemoveFile: function () {
             MessageToast.show("To remove file, clear and select again");
         },
 
         _formatFileSize: function (iBytes) {
             if (iBytes === 0) return '0 Bytes';
-            var k = 1024;
-            var sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            var i = Math.floor(Math.log(iBytes) / Math.log(k));
+            let k = 1024;
+            let sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            let i = Math.floor(Math.log(iBytes) / Math.log(k));
             return Math.round(iBytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
         },
 
         _getFileIcon: function (sFileName) {
-            var sExtension = sFileName.split('.').pop().toLowerCase();
-            var mIcons = {
+            let sExtension = sFileName.split('.').pop().toLowerCase();
+            let mIcons = {
                 "xlsx": "sap-icon://excel-attachment",
                 "xls": "sap-icon://excel-attachment",
                 "pdf": "sap-icon://pdf-attachment",
@@ -1154,7 +1150,7 @@ sap.ui.define([
 
         // ========== CREATE BOOK DIALOG ==========
         onOpenCreateDialog: function () {
-            var oView = this.getView();
+            let oView = this.getView();
 
             if (!this._pDialog) {
                 this._pDialog = Fragment.load({
@@ -1184,8 +1180,8 @@ sap.ui.define([
         },
 
         onCreateBook: function () {
-            var oModel = this.getView().getModel();
-            var oNewBook = this.getView().getModel("newBook").getData();
+            let oModel = this.getView().getModel();
+            let oNewBook = this.getView().getModel("newBook").getData();
 
             if (!oNewBook.title || !oNewBook.author_ID || !oNewBook.price || !oNewBook.stock) {
                 MessageBox.error("Please fill in all required fields");
@@ -1202,7 +1198,7 @@ sap.ui.define([
                 return;
             }
 
-            var oEntry = {
+            let oEntry = {
                 title: oNewBook.title,
                 author_ID: oNewBook.author_ID,
                 price: parseFloat(oNewBook.price).toString(),
@@ -1214,7 +1210,7 @@ sap.ui.define([
                     MessageToast.show("Book '" + oNewBook.title + "' created successfully");
                     this.onCloseCreateDialog();
 
-                    var oSmartTable = this.byId("booksSmartTable");
+                    let oSmartTable = this.byId("booksSmartTable");
                     if (oSmartTable) {
                         oSmartTable.rebindTable();
                     }
@@ -1223,10 +1219,10 @@ sap.ui.define([
                     this._loadNotifications();
                 }.bind(this),
                 error: function (oError) {
-                    var sMessage = "Failed to create book";
+                    let sMessage = "Failed to create book";
                     if (oError.responseText) {
                         try {
-                            var oErrorResponse = JSON.parse(oError.responseText);
+                            let oErrorResponse = JSON.parse(oError.responseText);
                             sMessage = oErrorResponse.error.message.value || sMessage;
                         } catch (e) {
                             // Use default message

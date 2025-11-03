@@ -24,7 +24,7 @@ class StudyService extends cds.ApplicationService {
         if (existingTITLE) return req.error(409, "ERROR_TITLE_ALREADY_EXISTS");
     }
 
-    async #createBookNotification(data, req) {
+    async #createBookNotification(data) {
         // Create notification after book is created
         await INSERT.into('Notifications').entries({
             title: 'New Book Added',
@@ -46,7 +46,7 @@ class StudyService extends cds.ApplicationService {
         return true;
     }
 
-    async #getUnreadCount(req) {
+    async #getUnreadCount() {
         const result = await SELECT.from('Notifications')
             .where({ isRead: false })
             .columns('count(*) as count');

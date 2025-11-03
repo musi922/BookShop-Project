@@ -20,10 +20,10 @@ sap.ui.define([
 
         onSmartTableInit: function() {
             // Rebind the table after SmartTable is initialized
-            var oSmartTable = this.byId("smartTable");
+            let oSmartTable = this.byId("smartTable");
             if (oSmartTable) {
                 // Get the inner table
-                var oTable = oSmartTable.getTable();
+                let oTable = oSmartTable.getTable();
                 if (oTable) {
                     // Disable growing to use manual pagination
                     oTable.setGrowing(false);
@@ -34,7 +34,7 @@ sap.ui.define([
         },
 
         onBeforeRebindTable: function(oEvent) {
-            var mBindingParams = oEvent.getParameter("bindingParams");
+            let mBindingParams = oEvent.getParameter("bindingParams");
             
             // Initialize parameters object if it doesn't exist
             if (!mBindingParams.parameters) {
@@ -42,7 +42,7 @@ sap.ui.define([
             }
             
             // Calculate skip value for pagination
-            var iSkip = (this._currentPage - 1) * this._pageSize;
+            let iSkip = (this._currentPage - 1) * this._pageSize;
             
             // CRITICAL: Set these parameters for proper pagination
             mBindingParams.length = this._pageSize;
@@ -60,11 +60,11 @@ sap.ui.define([
             // Attach event to update pagination info after data is loaded
             // Using the same approach as your working code
             setTimeout(function() {
-                var oSmartTable = this.byId("smartTable");
+                let oSmartTable = this.byId("smartTable");
                 if (oSmartTable) {
-                    var oTable = oSmartTable.getTable();
+                    let oTable = oSmartTable.getTable();
                     if (oTable) {
-                        var oBinding = oTable.getBinding("items");
+                        let oBinding = oTable.getBinding("items");
                         if (oBinding) {
                             // Remove previous listener to avoid duplicates
                             oBinding.detachEvent("dataReceived", this._onDataReceived, this);
@@ -77,8 +77,8 @@ sap.ui.define([
         },
 
         _onDataReceived: function(oEvent) {
-            var oBinding = oEvent.getSource();
-            var oData = oEvent.getParameter("data");
+            let oBinding = oEvent.getSource();
+            let oData = oEvent.getParameter("data");
             
             console.log("Data received:", oData);
             console.log("Binding:", oBinding);
@@ -98,7 +98,7 @@ sap.ui.define([
                 console.log("Count from binding.getLength():", this._totalItems);
             } else {
                 // Fallback: count visible items
-                var aContexts = oBinding.getContexts();
+                let aContexts = oBinding.getContexts();
                 this._totalItems = aContexts ? aContexts.length : 0;
                 console.log("Count from contexts:", this._totalItems);
             }
@@ -110,9 +110,9 @@ sap.ui.define([
         },
 
         _updatePaginationControls: function() {
-            var iTotalPages = Math.ceil(this._totalItems / this._pageSize);
-            var iStart = this._totalItems === 0 ? 0 : (this._currentPage - 1) * this._pageSize + 1;
-            var iEnd = Math.min(this._currentPage * this._pageSize, this._totalItems);
+            let iTotalPages = Math.ceil(this._totalItems / this._pageSize);
+            let iStart = this._totalItems === 0 ? 0 : (this._currentPage - 1) * this._pageSize + 1;
+            let iEnd = Math.min(this._currentPage * this._pageSize, this._totalItems);
             
             console.log("Updating pagination - Start:", iStart, "End:", iEnd, "Total:", this._totalItems, "Pages:", iTotalPages);
             
@@ -124,8 +124,8 @@ sap.ui.define([
             this.byId("totalPagesText").setText("of " + (iTotalPages || 1));
             
             // Enable/disable navigation buttons
-            var bHasPreviousPage = this._currentPage > 1;
-            var bHasNextPage = this._currentPage < iTotalPages;
+            let bHasPreviousPage = this._currentPage > 1;
+            let bHasNextPage = this._currentPage < iTotalPages;
             
             this.byId("firstPageBtn").setEnabled(bHasPreviousPage);
             this.byId("previousPageBtn").setEnabled(bHasPreviousPage);
@@ -148,7 +148,7 @@ sap.ui.define([
         },
 
         onNextPage: function() {
-            var iTotalPages = Math.ceil(this._totalItems / this._pageSize);
+            let iTotalPages = Math.ceil(this._totalItems / this._pageSize);
             if (this._currentPage < iTotalPages) {
                 this._currentPage++;
                 this._rebindTable();
@@ -156,7 +156,7 @@ sap.ui.define([
         },
 
         onLastPage: function() {
-            var iTotalPages = Math.ceil(this._totalItems / this._pageSize);
+            let iTotalPages = Math.ceil(this._totalItems / this._pageSize);
             if (this._currentPage !== iTotalPages && iTotalPages > 0) {
                 this._currentPage = iTotalPages;
                 this._rebindTable();
@@ -164,8 +164,8 @@ sap.ui.define([
         },
 
         onPageInputSubmit: function(oEvent) {
-            var iPage = parseInt(oEvent.getParameter("value"), 10);
-            var iTotalPages = Math.ceil(this._totalItems / this._pageSize);
+            let iPage = parseInt(oEvent.getParameter("value"), 10);
+            let iTotalPages = Math.ceil(this._totalItems / this._pageSize);
             
             // Validate page number
             if (iPage >= 1 && iPage <= iTotalPages) {
@@ -180,7 +180,7 @@ sap.ui.define([
 
         _rebindTable: function() {
             // Trigger table rebind
-            var oSmartTable = this.byId("smartTable");
+            let oSmartTable = this.byId("smartTable");
             if (oSmartTable) {
                 oSmartTable.rebindTable();
             }

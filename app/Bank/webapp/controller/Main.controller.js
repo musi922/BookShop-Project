@@ -10,7 +10,7 @@ sap.ui.define([
 
         onInit: function () {
             // Initialize application data model
-            var oModel = new JSONModel({
+            let oModel = new JSONModel({
                 selectedProgram: "",
                 termsAccepted: false,
                 currentStep: 1,
@@ -41,7 +41,7 @@ sap.ui.define([
             this.getView().setModel(oModel);
 
             // Initialize empty config model
-            var oConfigModel = new JSONModel({});
+            let oConfigModel = new JSONModel({});
             this.getView().setModel(oConfigModel, "config");
 
             // Load program list for reference
@@ -56,7 +56,7 @@ sap.ui.define([
         // ==================== PROGRAM SELECTION ====================
 
         onProgramChange: function (oEvent) {
-            var sSelectedKey = oEvent.getParameter("selectedItem").getKey();
+            let sSelectedKey = oEvent.getParameter("selectedItem").getKey();
             
             if (!sSelectedKey) {
                 this._clearProgramConfig();
@@ -67,7 +67,7 @@ sap.ui.define([
         },
 
         _loadProgramConfig: function (sProgramKey) {
-            var sConfigPath = this._programList[sProgramKey];
+            let sConfigPath = this._programList[sProgramKey];
             
             if (!sConfigPath) {
                 MessageToast.show("Program configuration not found.");
@@ -78,12 +78,12 @@ sap.ui.define([
             sap.ui.core.BusyIndicator.show(0);
 
             // Load the JSON configuration file
-            var oConfigModel = this.getView().getModel("config");
+            let oConfigModel = this.getView().getModel("config");
             oConfigModel.loadData(sConfigPath)
                 .then(function () {
                     sap.ui.core.BusyIndicator.hide();
                     
-                    var oModel = this.getView().getModel();
+                    let oModel = this.getView().getModel();
                     oModel.setProperty("/selectedProgram", sProgramKey);
                     
                     // Validate the program step after config is loaded
@@ -102,19 +102,19 @@ sap.ui.define([
         },
 
         _clearProgramConfig: function () {
-            var oConfigModel = this.getView().getModel("config");
+            let oConfigModel = this.getView().getModel("config");
             oConfigModel.setData({});
             
-            var oModel = this.getView().getModel();
+            let oModel = this.getView().getModel();
             oModel.setProperty("/selectedProgram", "");
             
             this._validateProgramStep();
         },
 
         _validateProgramStep: function () {
-            var oModel = this.getView().getModel();
-            var oProgramStep = this.byId("programStep");
-            var bValid = !!oModel.getProperty("/selectedProgram");
+            let oModel = this.getView().getModel();
+            let oProgramStep = this.byId("programStep");
+            let bValid = !!oModel.getProperty("/selectedProgram");
             
             oProgramStep.setValidated(bValid);
         },
@@ -126,26 +126,26 @@ sap.ui.define([
         },
 
         _validateApplicantStep: function () {
-            var oModel = this.getView().getModel();
-            var oConfigModel = this.getView().getModel("config");
-            var oApplicantStep = this.byId("applicantStep");
-            var oApplicant = oModel.getProperty("/applicant");
-            var oFieldsConfig = oConfigModel.getProperty("/steps/applicantInfo/fields");
+            let oModel = this.getView().getModel();
+            let oConfigModel = this.getView().getModel("config");
+            let oApplicantStep = this.byId("applicantStep");
+            let oApplicant = oModel.getProperty("/applicant");
+            let oFieldsConfig = oConfigModel.getProperty("/steps/applicantInfo/fields");
 
             if (!oFieldsConfig) {
                 oApplicantStep.setValidated(false);
                 return;
             }
 
-            var bValid = true;
+            let bValid = true;
 
             // Check each field based on its configuration
-            for (var sFieldName in oFieldsConfig) {
-                var oFieldConfig = oFieldsConfig[sFieldName];
+            for (let sFieldName in oFieldsConfig) {
+                let oFieldConfig = oFieldsConfig[sFieldName];
                 
                 // Only validate if field is visible and required
                 if (oFieldConfig.visible && oFieldConfig.required) {
-                    var sValue = oApplicant[sFieldName];
+                    let sValue = oApplicant[sFieldName];
                     
                     if (!sValue || sValue.trim() === "") {
                         bValid = false;
@@ -156,7 +156,7 @@ sap.ui.define([
 
             // Email validation if email is visible and has a value
             if (bValid && oFieldsConfig.email && oFieldsConfig.email.visible && oApplicant.email) {
-                var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                let emailPattern = /^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/;
                 bValid = emailPattern.test(oApplicant.email);
             }
 
@@ -164,7 +164,7 @@ sap.ui.define([
         },
 
         _resetApplicantStep: function () {
-            var oModel = this.getView().getModel();
+            let oModel = this.getView().getModel();
             oModel.setProperty("/applicant", {
                 fullName: "",
                 email: "",
@@ -176,7 +176,7 @@ sap.ui.define([
                 postalCode: ""
             });
             
-            var oApplicantStep = this.byId("applicantStep");
+            let oApplicantStep = this.byId("applicantStep");
             oApplicantStep.setValidated(false);
         },
 
@@ -187,26 +187,26 @@ sap.ui.define([
         },
 
         _validateProjectStep: function () {
-            var oModel = this.getView().getModel();
-            var oConfigModel = this.getView().getModel("config");
-            var oProjectStep = this.byId("projectStep");
-            var oProject = oModel.getProperty("/project");
-            var oFieldsConfig = oConfigModel.getProperty("/steps/projectDetails/fields");
-            var oDocumentsConfig = oConfigModel.getProperty("/steps/projectDetails/documents");
+            let oModel = this.getView().getModel();
+            let oConfigModel = this.getView().getModel("config");
+            let oProjectStep = this.byId("projectStep");
+            let oProject = oModel.getProperty("/project");
+            let oFieldsConfig = oConfigModel.getProperty("/steps/projectDetails/fields");
+            let oDocumentsConfig = oConfigModel.getProperty("/steps/projectDetails/documents");
 
             if (!oFieldsConfig) {
                 oProjectStep.setValidated(false);
                 return;
             }
 
-            var bValid = true;
+            let bValid = true;
 
             // Check project fields
-            for (var sFieldName in oFieldsConfig) {
-                var oFieldConfig = oFieldsConfig[sFieldName];
+            for (let sFieldName in oFieldsConfig) {
+                let oFieldConfig = oFieldsConfig[sFieldName];
                 
                 if (oFieldConfig.visible && oFieldConfig.required) {
-                    var sValue = oProject[sFieldName];
+                    let sValue = oProject[sFieldName];
                     
                     if (!sValue || (typeof sValue === "string" && sValue.trim() === "")) {
                         bValid = false;
@@ -233,8 +233,8 @@ sap.ui.define([
 
             // Validate funding amount is within range
             if (bValid && oProject.fundingAmount) {
-                var iFundingAmount = parseInt(oProject.fundingAmount);
-                var oFundingRange = oConfigModel.getProperty("/fundingRange");
+                let iFundingAmount = parseInt(oProject.fundingAmount);
+                let oFundingRange = oConfigModel.getProperty("/fundingRange");
                 
                 if (oFundingRange) {
                     if (iFundingAmount < oFundingRange.min || iFundingAmount > oFundingRange.max) {
@@ -244,12 +244,10 @@ sap.ui.define([
             }
 
             // Check required documents
-            if (bValid && oDocumentsConfig) {
-                var oDocuments = oModel.getProperty("/documents");
-                
+            if (bValid && oDocumentsConfig) {                
                 // Check business plan
                 if (oDocumentsConfig.businessPlan && oDocumentsConfig.businessPlan.required) {
-                    var oBusinessPlanUpload = this.byId("businessPlanUpload");
+                    let oBusinessPlanUpload = this.byId("businessPlanUpload");
                     if (oBusinessPlanUpload && oBusinessPlanUpload.getItems().length === 0) {
                         bValid = false;
                     }
@@ -257,7 +255,7 @@ sap.ui.define([
 
                 // Check financial statements
                 if (oDocumentsConfig.financialStatements && oDocumentsConfig.financialStatements.required) {
-                    var oFinancialUpload = this.byId("financialUpload");
+                    let oFinancialUpload = this.byId("financialUpload");
                     if (oFinancialUpload && oFinancialUpload.getItems().length === 0) {
                         bValid = false;
                     }
@@ -268,7 +266,7 @@ sap.ui.define([
         },
 
         _resetProjectStep: function () {
-            var oModel = this.getView().getModel();
+            let oModel = this.getView().getModel();
             oModel.setProperty("/project", {
                 title: "",
                 description: "",
@@ -283,54 +281,54 @@ sap.ui.define([
             });
             
             // Clear upload sets
-            var oBusinessPlanUpload = this.byId("businessPlanUpload");
+            let oBusinessPlanUpload = this.byId("businessPlanUpload");
             if (oBusinessPlanUpload) {
                 oBusinessPlanUpload.removeAllItems();
             }
             
-            var oFinancialUpload = this.byId("financialUpload");
+            let oFinancialUpload = this.byId("financialUpload");
             if (oFinancialUpload) {
                 oFinancialUpload.removeAllItems();
             }
             
-            var oProjectStep = this.byId("projectStep");
+            let oProjectStep = this.byId("projectStep");
             oProjectStep.setValidated(false);
         },
 
         // ==================== FILE UPLOAD HANDLERS ====================
 
-        onFileUploaded: function (oEvent) {
+        onFileUploaded: function () {
             this._updateUploadedDocumentsList();
             this._validateProjectStep();
         },
 
-        onFileRemoved: function (oEvent) {
+        onFileRemoved: function () {
             this._updateUploadedDocumentsList();
             this._validateProjectStep();
         },
 
         _updateUploadedDocumentsList: function () {
-            var aDocuments = [];
+            let aDocuments = [];
             
-            var oBusinessPlanUpload = this.byId("businessPlanUpload");
+            let oBusinessPlanUpload = this.byId("businessPlanUpload");
             if (oBusinessPlanUpload && oBusinessPlanUpload.getItems().length > 0) {
                 aDocuments.push("Business Plan");
             }
             
-            var oFinancialUpload = this.byId("financialUpload");
+            let oFinancialUpload = this.byId("financialUpload");
             if (oFinancialUpload && oFinancialUpload.getItems().length > 0) {
                 aDocuments.push("Financial Statements");
             }
             
-            var sDocumentsList = aDocuments.length > 0 ? aDocuments.join(", ") : "None";
+            let sDocumentsList = aDocuments.length > 0 ? aDocuments.join(", ") : "None";
             this.getView().getModel().setProperty("/uploadedDocuments", sDocumentsList);
         },
 
         // ==================== WIZARD NAVIGATION ====================
 
         onStepActivate: function (oEvent) {
-            var oModel = this.getView().getModel();
-            var iStepNumber = oEvent.getParameter("index");
+            let oModel = this.getView().getModel();
+            let iStepNumber = oEvent.getParameter("index");
             
             // Update current step in model
             oModel.setProperty("/currentStep", iStepNumber + 1);
@@ -356,11 +354,11 @@ sap.ui.define([
         },
 
         onWizardNext: function () {
-            var oWizard = this.byId("fundingWizard");
-            var oModel = this.getView().getModel();
-            var iCurrentStepIndex = oWizard.getProgress() - 1;
-            var aSteps = oWizard.getSteps();
-            var oCurrentStep = aSteps[iCurrentStepIndex];
+            let oWizard = this.byId("fundingWizard");
+            let oModel = this.getView().getModel();
+            let iCurrentStepIndex = oWizard.getProgress() - 1;
+            let aSteps = oWizard.getSteps();
+            let oCurrentStep = aSteps[iCurrentStepIndex];
 
             // Revalidate the current step before proceeding
             this._validateStepByIndex(iCurrentStepIndex);
@@ -369,94 +367,95 @@ sap.ui.define([
                 oWizard.nextStep();
                 
                 // Update current step in model for button visibility
-                var iNewStep = oWizard.getProgress();
+                let iNewStep = oWizard.getProgress();
                 oModel.setProperty("/currentStep", iNewStep);
             } else {
                 this._showValidationErrorMessage(iCurrentStepIndex);
             }
         },
 
-        _showValidationErrorMessage: function (iStepIndex) {
-            var oConfigModel = this.getView().getModel("config");
-            var sMessage = "Please complete all required fields before proceeding.";
+_showValidationErrorMessage: function (iStepIndex) {
+    let oConfigModel = this.getView().getModel("config");
+    let sMessage = "Please complete all required fields before proceeding.";
 
-            switch (iStepIndex) {
-                case 0:
-                    sMessage = "Please select a funding program.";
-                    break;
-                case 1:
-                    sMessage = "Please fill in all required applicant information fields.";
-                    break;
-                case 2:
-                    var oFieldsConfig = oConfigModel.getProperty("/steps/projectDetails/fields");
-                    var oDocumentsConfig = oConfigModel.getProperty("/steps/projectDetails/documents");
-                    
-                    // Build detailed error message
-                    var aErrors = [];
-                    
-                    if (oFieldsConfig) {
-                        var oModel = this.getView().getModel();
-                        var oProject = oModel.getProperty("/project");
-                        
-                        // Check description length
-                        if (oFieldsConfig.description && oFieldsConfig.description.minLength) {
-                            if (!oProject.description || oProject.description.length < oFieldsConfig.description.minLength) {
-                                aErrors.push("Description must be at least " + oFieldsConfig.description.minLength + " characters");
-                            }
-                        }
-                        
-                        // Check duration
-                        if (oFieldsConfig.duration && oFieldsConfig.duration.max) {
-                            if (oProject.duration && parseInt(oProject.duration) > oFieldsConfig.duration.max) {
-                                aErrors.push("Duration cannot exceed " + oFieldsConfig.duration.max + " months");
-                            }
-                        }
-                        
-                        // Check funding amount
-                        if (oProject.fundingAmount) {
-                            var oFundingRange = oConfigModel.getProperty("/fundingRange");
-                            var iFunding = parseInt(oProject.fundingAmount);
-                            if (oFundingRange && (iFunding < oFundingRange.min || iFunding > oFundingRange.max)) {
-                                aErrors.push("Funding amount must be between " + oFundingRange.min + " and " + oFundingRange.max);
-                            }
-                        }
+    switch (iStepIndex) {
+        case 0:
+            sMessage = "Please select a funding program.";
+            break;
+        case 1:
+            sMessage = "Please fill in all required applicant information fields.";
+            break;
+        case 2: {
+            let oFieldsConfig = oConfigModel.getProperty("/steps/projectDetails/fields");
+            let oDocumentsConfig = oConfigModel.getProperty("/steps/projectDetails/documents");
+            
+            // Build detailed error message
+            let aErrors = [];
+            
+            if (oFieldsConfig) {
+                let oModel = this.getView().getModel();
+                let oProject = oModel.getProperty("/project");
+                
+                // Check description length
+                if (oFieldsConfig.description && oFieldsConfig.description.minLength) {
+                    if (!oProject.description || oProject.description.length < oFieldsConfig.description.minLength) {
+                        aErrors.push("Description must be at least " + oFieldsConfig.description.minLength + " characters");
                     }
-                    
-                    // Check documents
-                    if (oDocumentsConfig) {
-                        if (oDocumentsConfig.businessPlan && oDocumentsConfig.businessPlan.required) {
-                            var oBusinessPlanUpload = this.byId("businessPlanUpload");
-                            if (!oBusinessPlanUpload || oBusinessPlanUpload.getItems().length === 0) {
-                                aErrors.push("Business Plan document is required");
-                            }
-                        }
-                        
-                        if (oDocumentsConfig.financialStatements && oDocumentsConfig.financialStatements.required) {
-                            var oFinancialUpload = this.byId("financialUpload");
-                            if (!oFinancialUpload || oFinancialUpload.getItems().length === 0) {
-                                aErrors.push("Financial Statements document is required");
-                            }
-                        }
+                }
+                
+                // Check duration
+                if (oFieldsConfig.duration && oFieldsConfig.duration.max) {
+                    if (oProject.duration && parseInt(oProject.duration) > oFieldsConfig.duration.max) {
+                        aErrors.push("Duration cannot exceed " + oFieldsConfig.duration.max + " months");
                     }
-                    
-                    if (aErrors.length > 0) {
-                        sMessage = "Please fix the following issues:\n\n• " + aErrors.join("\n• ");
-                    } else {
-                        sMessage = "Please complete all required project details.";
+                }
+                
+                // Check funding amount
+                if (oProject.fundingAmount) {
+                    let oFundingRange = oConfigModel.getProperty("/fundingRange");
+                    let iFunding = parseInt(oProject.fundingAmount);
+                    if (oFundingRange && (iFunding < oFundingRange.min || iFunding > oFundingRange.max)) {
+                        aErrors.push("Funding amount must be between " + oFundingRange.min + " and " + oFundingRange.max);
                     }
-                    break;
+                }
             }
+            
+            // Check documents
+            if (oDocumentsConfig) {
+                if (oDocumentsConfig.businessPlan && oDocumentsConfig.businessPlan.required) {
+                    let oBusinessPlanUpload = this.byId("businessPlanUpload");
+                    if (!oBusinessPlanUpload || oBusinessPlanUpload.getItems().length === 0) {
+                        aErrors.push("Business Plan document is required");
+                    }
+                }
+                
+                if (oDocumentsConfig.financialStatements && oDocumentsConfig.financialStatements.required) {
+                    let oFinancialUpload = this.byId("financialUpload");
+                    if (!oFinancialUpload || oFinancialUpload.getItems().length === 0) {
+                        aErrors.push("Financial Statements document is required");
+                    }
+                }
+            }
+            
+            if (aErrors.length > 0) {
+                sMessage = "Please fix the following issues:\n\n• " + aErrors.join("\n• ");
+            } else {
+                sMessage = "Please complete all required project details.";
+            }
+            break;
+        }
+    }
 
-            MessageBox.warning(sMessage);
-        },
+    MessageBox.warning(sMessage);
+},
 
         onWizardBack: function () {
-            var oWizard = this.byId("fundingWizard");
-            var oModel = this.getView().getModel();
+            let oWizard = this.byId("fundingWizard");
+            let oModel = this.getView().getModel();
             oWizard.previousStep();
             
             // Update current step in model for button visibility
-            var iCurrentStep = oWizard.getProgress();
+            let iCurrentStep = oWizard.getProgress();
             oModel.setProperty("/currentStep", iCurrentStep);
         },
 
@@ -467,13 +466,13 @@ sap.ui.define([
         // ==================== TERMS AND SUBMISSION ====================
 
         onTermsChange: function (oEvent) {
-            var bSelected = oEvent.getParameter("selected");
+            let bSelected = oEvent.getParameter("selected");
             this.getView().getModel().setProperty("/termsAccepted", bSelected);
         },
 
         onSubmitApplication: function () {
-            var oModel = this.getView().getModel();
-            var oConfigModel = this.getView().getModel("config");
+            let oModel = this.getView().getModel();
+            let oConfigModel = this.getView().getModel("config");
             
             if (!oModel.getProperty("/termsAccepted")) {
                 MessageToast.show("Please accept the terms and conditions to submit.");
@@ -481,7 +480,7 @@ sap.ui.define([
             }
 
             // Prepare submission data
-            var oSubmissionData = {
+            let oSubmissionData = {
                 program: oConfigModel.getData(),
                 applicant: oModel.getProperty("/applicant"),
                 project: oModel.getProperty("/project"),
@@ -493,9 +492,9 @@ sap.ui.define([
         },
 
         _getUploadedDocumentsList: function () {
-            var aDocuments = [];
+            let aDocuments = [];
             
-            var oBusinessPlanUpload = this.byId("businessPlanUpload");
+            let oBusinessPlanUpload = this.byId("businessPlanUpload");
             if (oBusinessPlanUpload) {
                 oBusinessPlanUpload.getItems().forEach(function (oItem) {
                     aDocuments.push({
@@ -505,7 +504,7 @@ sap.ui.define([
                 });
             }
             
-            var oFinancialUpload = this.byId("financialUpload");
+            let oFinancialUpload = this.byId("financialUpload");
             if (oFinancialUpload) {
                 oFinancialUpload.getItems().forEach(function (oItem) {
                     aDocuments.push({
@@ -525,8 +524,8 @@ sap.ui.define([
             setTimeout(function () {
                 sap.ui.core.BusyIndicator.hide();
                 
-                var sReferenceNumber = "FA-" + oData.program.programId.toUpperCase() + "-" + Date.now();
-                var sProcessingTime = oData.program.processingTime.value + " " + oData.program.processingTime.unit;
+                let sReferenceNumber = "FA-" + oData.program.programId.toUpperCase() + "-" + Date.now();
+                let sProcessingTime = oData.program.processingTime.value + " " + oData.program.processingTime.unit;
                 
                 MessageBox.success(
                     "Your application has been submitted successfully!\n\n" +
@@ -544,9 +543,9 @@ sap.ui.define([
         },
 
         _resetWizard: function () {
-            var oWizard = this.byId("fundingWizard");
-            var oModel = this.getView().getModel();
-            var oConfigModel = this.getView().getModel("config");
+            let oWizard = this.byId("fundingWizard");
+            let oModel = this.getView().getModel();
+            let oConfigModel = this.getView().getModel("config");
 
             // Reset data model
             oModel.setData({
@@ -582,12 +581,12 @@ sap.ui.define([
             oConfigModel.setData({});
 
             // Clear upload sets
-            var oBusinessPlanUpload = this.byId("businessPlanUpload");
+            let oBusinessPlanUpload = this.byId("businessPlanUpload");
             if (oBusinessPlanUpload) {
                 oBusinessPlanUpload.removeAllItems();
             }
             
-            var oFinancialUpload = this.byId("financialUpload");
+            let oFinancialUpload = this.byId("financialUpload");
             if (oFinancialUpload) {
                 oFinancialUpload.removeAllItems();
             }
@@ -601,12 +600,11 @@ sap.ui.define([
 // ==================== DOWNLOAD FUNCTIONS ====================
 
 onDownloadPDF: function () {
-    var oModel = this.getView().getModel();
-    var oConfigModel = this.getView().getModel("config");
+    let oConfigModel = this.getView().getModel("config");
     
     try {
         // Prepare data for PDF
-        var oData = this._prepareDownloadData();
+        let oData = this._prepareDownloadData();
         
         // Log the data we're about to download
         console.log("=== PDF Download Data ===");
@@ -615,7 +613,7 @@ onDownloadPDF: function () {
         console.log("========================");
         
         // Create PDF content
-        var sPdfContent = this._generatePDFContent(oData, oConfigModel.getData());
+        let sPdfContent = this._generatePDFContent(oData, oConfigModel.getData());
         
         console.log("=== Generated PDF Content ===");
         console.log(sPdfContent);
@@ -632,12 +630,11 @@ onDownloadPDF: function () {
 },
 
 onDownloadExcel: function () {
-    var oModel = this.getView().getModel();
-    var oConfigModel = this.getView().getModel("config");
+    let oConfigModel = this.getView().getModel("config");
     
     try {
         // Prepare data for Excel
-        var oData = this._prepareDownloadData();
+        let oData = this._prepareDownloadData();
         
         // Log the data we're about to download
         console.log("=== Excel Download Data ===");
@@ -646,7 +643,7 @@ onDownloadExcel: function () {
         console.log("==========================");
         
         // Create Excel content (CSV format for simplicity)
-        var sExcelContent = this._generateExcelContent(oData, oConfigModel.getData());
+        let sExcelContent = this._generateExcelContent(oData, oConfigModel.getData());
         
         console.log("=== Generated CSV Content ===");
         console.log(sExcelContent);
@@ -663,8 +660,8 @@ onDownloadExcel: function () {
 },
 
 _prepareDownloadData: function () {
-    var oModel = this.getView().getModel();
-    var oConfigModel = this.getView().getModel("config");
+    let oModel = this.getView().getModel();
+    let oConfigModel = this.getView().getModel("config");
     
     return {
         program: {
@@ -683,7 +680,7 @@ _prepareDownloadData: function () {
 _generatePDFContent: function (oData, oConfig) {
     // Simple text-based PDF content
     // In production, use jsPDF library for proper PDF generation
-    var aContent = [];
+    let aContent = [];
     
     aContent.push("FUNDING APPLICATION");
     aContent.push("===================\n");
@@ -740,7 +737,7 @@ _generatePDFContent: function (oData, oConfig) {
 
 _generateExcelContent: function (oData, oConfig) {
     // Generate CSV format (compatible with Excel)
-    var aRows = [];
+    let aRows = [];
     
     // Header
     aRows.push(["FUNDING APPLICATION"]);
@@ -789,9 +786,9 @@ _generateExcelContent: function (oData, oConfig) {
     }
     
     // Convert to CSV
-    var sCsv = aRows.map(function(row) {
+    let sCsv = aRows.map(function(row) {
         return row.map(function(cell) {
-            var cellStr = cell || "";
+            let cellStr = cell || "";
             // Escape quotes and wrap in quotes if contains comma or quote
             if (cellStr.toString().indexOf(",") > -1 || cellStr.toString().indexOf('"') > -1) {
                 cellStr = '"' + cellStr.toString().replace(/"/g, '""') + '"';
@@ -805,10 +802,10 @@ _generateExcelContent: function (oData, oConfig) {
 
 _downloadFile: function (sContent, sFileName, sMimeType) {
     // Create blob
-    var blob = new Blob([sContent], { type: sMimeType });
+    let blob = new Blob([sContent], { type: sMimeType });
     
     // Create download link
-    var link = document.createElement("a");
+    let link = document.createElement("a");
     link.href = window.URL.createObjectURL(blob);
     link.download = sFileName;
     
