@@ -52,17 +52,17 @@ jobs:
           echo "PR description exists"
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Install app dependencies
         run: |
           cd app
-          npm ci
+          npm ci --legacy-peer-deps
 
       - name: Install Bank app dependencies
         run: |
           cd app/Bank
-          npm ci
+          npm ci --legacy-peer-deps
 
   eslint-check:
     runs-on: ubuntu-latest
@@ -79,7 +79,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Run ESLint on changed files
         run: |
@@ -108,7 +108,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Run tests
         run: npm test --if-present || echo "No tests configured yet"
@@ -132,7 +132,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Build CAP service
         run: npx cds build --production
@@ -156,7 +156,7 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Run npm audit
         run: npm audit --audit-level=high

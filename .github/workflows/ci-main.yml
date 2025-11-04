@@ -26,7 +26,7 @@ jobs:
       - name: Install root dependencies (if package.json exists)
         run: |
           if [ -f package.json ]; then
-            npm ci
+            npm ci --legacy-peer-deps
           else
             echo "No root package.json found, skipping root install"
           fi
@@ -34,12 +34,12 @@ jobs:
       - name: Install app dependencies
         run: |
           cd app
-          npm ci
+          npm ci --legacy-peer-deps
 
       - name: Install Bank app dependencies
         run: |
           cd app/Bank
-          npm ci
+          npm ci --legacy-peer-deps
 
       - name: Run ESLint
         run: |

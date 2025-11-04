@@ -43,7 +43,7 @@ jobs:
       - name: Install Bank app dependencies
         run: |
           cd app/Bank
-          npm ci
+          npm ci --legacy-peer-deps
 
       - name: Run ESLint on all files
         run: |
@@ -74,7 +74,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Get changed files
         id: changed-files
@@ -130,7 +130,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Check specific ESLint rules
         run: |
@@ -179,7 +179,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Calculate code complexity
         run: |
