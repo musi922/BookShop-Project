@@ -43,13 +43,13 @@ jobs:
       - name: Install Bank app dependencies
         run: |
           cd app/Bank
-          npm ci --legacy-peer-deps
+          npm ci
 
       - name: Run ESLint on all files
         run: |
           echo "Running ESLint on entire project..."
-          npx eslint .js,.cds --format json --output-file eslint-report.json || true
-          npx eslint .js,.cds --format stylish
+          npx eslint . --ext .js,.cds --format json --output-file eslint-report.json || true
+          npx eslint . --ext .js,.cds --format stylish
 
       - name: Upload ESLint Report
         uses: actions/upload-artifact@v4
@@ -74,7 +74,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+        run: npm ci
 
       - name: Get changed files
         id: changed-files
@@ -130,7 +130,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+        run: npm ci
 
       - name: Check specific ESLint rules
         run: |
@@ -179,12 +179,12 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+        run: npm ci
 
       - name: Calculate code complexity
         run: |
           echo "Analyzing code complexity..."
-          npx eslint .js --format json | jq '.[] | select(.messages | length > 0) | {filePath, errorCount, warningCount}' || true
+          npx eslint . --ext .js --format json | jq '.[] | select(.messages | length > 0) | {filePath, errorCount, warningCount}' || true
 
       - name: Comment PR with ESLint results
         if: always()
