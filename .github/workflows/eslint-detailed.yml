@@ -11,6 +11,11 @@ on:
       - 'eslint.config.mjs'
       - 'package.json'
 
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
 jobs:
   eslint-full-check:
     runs-on: ubuntu-latest
@@ -28,12 +33,12 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps --legacy-peer-deps
 
       - name: Install app dependencies
         run: |
           cd app
-          npm ci
+          npm ci --legacy-peer-deps
 
       - name: Install Bank app dependencies
         run: |
