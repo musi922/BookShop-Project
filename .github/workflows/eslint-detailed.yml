@@ -48,8 +48,8 @@ jobs:
       - name: Run ESLint on all files
         run: |
           echo "Running ESLint on entire project..."
-          npx eslint . --ext .js,.cds --format json --output-file eslint-report.json || true
-          npx eslint . --ext .js,.cds --format stylish
+          npx eslint . .js,.cds --format json --output-file eslint-report.json || true
+          npx eslint . .js,.cds --format stylish
 
       - name: Upload ESLint Report
         uses: actions/upload-artifact@v4
@@ -184,7 +184,7 @@ jobs:
       - name: Calculate code complexity
         run: |
           echo "Analyzing code complexity..."
-          npx eslint . --ext .js --format json | jq '.[] | select(.messages | length > 0) | {filePath, errorCount, warningCount}' || true
+          npx eslint . .js --format json | jq '.[] | select(.messages | length > 0) | {filePath, errorCount, warningCount}' || true
 
       - name: Comment PR with ESLint results
         if: always()

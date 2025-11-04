@@ -46,7 +46,7 @@ jobs:
           if [ -f package.json ]; then
             npm run lint --if-present
           else
-            npx eslint . --ext .js,.cds
+            npx eslint . .js,.cds
           fi
 
       - name: Check Code Formatting
