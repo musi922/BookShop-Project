@@ -18,7 +18,7 @@
     "@cap-js-community/odata-v2-adapter": "^1.15.5",
     "@cap-js/sqlite": "^2.0.4",
     "@eslint-community/eslint-plugin-eslint-comments": "^4.5.0",
-    "@sap/cds": "^8.9.6",
+    "@sap/cds": "^9.4.4",
     "eslint-plugin-markdown": "^5.1.0",
     "eslint-plugin-regexp": "^2.10.0",
     "eslint-plugin-yml": "^1.19.0",
