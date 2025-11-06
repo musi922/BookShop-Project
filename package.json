@@ -11,8 +11,25 @@
     "test": "jest",
     "test:coverage": "jest --coverage",
     "build": "cds build --production",
-    "format": "prettier .",
-    "deploy": "cds deploy"
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "deploy": "cds deploy",
+    "validate:functions": "node scripts/validate-function-names.js",
+    "validate:console": "node scripts/check-console-logs.js",
+    "precommit": "lint-staged",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,mjs,cjs}": [
+      "node scripts/validate-function-names.js",
+      "node scripts/check-console-logs.js",
+      "eslint --report-unused-disable-directives --fix",
+      "prettier --write"
+    ],
+    "*.{json,yml,yaml,md}": [
+      "prettier --write"
+    ],
+    "scripts/**/*.js": []
   },
   "dependencies": {
     "@cap-js-community/odata-v2-adapter": "^1.15.5",
@@ -29,7 +46,9 @@
     "@sap/cds-dk": "^9.4.3",
     "@sap/eslint-plugin-cds": "^2",
     "eslint": "^8",
+    "husky": "^9",
     "jest": "^29",
+    "lint-staged": "^15",
     "prettier": "^3",
     "rimraf": "^5"
   },
