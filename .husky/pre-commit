@@ -3,10 +3,17 @@
 echo "🚀 Running pre-commit checks..."
 echo ""
 
-# Run lint-staged which will execute all validations
+# 1. Check branch protection first
+echo "🔒 Validating branch..."
+node scripts/validate-branch.js
+if [ $? -ne 0 ]; then
+  exit 1
+fi
+echo ""
+
+# 2. Run lint-staged for code quality
 npx lint-staged
 
-# Check exit code
 if [ $? -ne 0 ]; then
   echo ""
   echo "❌ Pre-commit checks failed!"

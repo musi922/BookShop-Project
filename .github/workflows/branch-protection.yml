@@ -1,0 +1,21 @@
+name: Branch Protection
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  enforce-pr-workflow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if push is from PR merge
+        run: |
+          if [[ "${{ github.event.head_commit.message }}" != "Merge pull request"* ]] && \
+             [[ "${{ github.event.head_commit.message }}" != "Merge branch"* ]]; then
+            echo "❌ Direct push to ${{ github.ref_name }} detected!"
+            echo "All changes must go through Pull Requests."
+            exit 1
+          fi
+          echo "✅ Push from PR merge - allowed"
