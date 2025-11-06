@@ -17,7 +17,8 @@
     "validate:functions": "node scripts/validate-function-names.js",
     "validate:console": "node scripts/check-console-logs.js",
     "precommit": "lint-staged",
-    "prepare": "husky"
+    "prepare": "husky",
+    "validate:branch": "node scripts/validate-branch.js"
   },
   "lint-staged": {
     "*.{js,mjs,cjs}": [
