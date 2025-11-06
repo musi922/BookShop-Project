@@ -84,7 +84,6 @@ if (match) {
   // Subject should start with lowercase
   if (subject[0] !== subject[0].toLowerCase()) {
     console.error('\n❌ Commit subject should start with a lowercase letter!\n');
-    console.error('Correct: "feat: add new feature"');
     console.error(`Wrong:   "feat: Add new feature"\n`);
     console.error(`Your commit message: "${commitMsg}"\n`);
     process.exit(1);
