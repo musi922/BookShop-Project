@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+echo "🔍 Validating commit message format..."
+echo ""
+
+# Run commit message validator
+node scripts/validate-commit-msg.js "$1"
+
+# Check exit code
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "❌ Commit message validation failed!"
+  echo "Please follow the Conventional Commits format."
+  echo ""
+  exit 1
+fi
