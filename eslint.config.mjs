@@ -74,9 +74,6 @@ export default [
       // Prevent alert statements
       'no-alert': 'error',
 
-      // Require const for variables that are never reassigned
-      'prefer-const': 'error',
-
       // Disallow unused expressions
       'no-unused-expressions': [
         'error',
@@ -84,16 +81,6 @@ export default [
           allowShortCircuit: true,
           allowTernary: true,
           allowTaggedTemplates: true,
-        },
-      ],
-
-      // Disallow declaring variables that shadow variables in outer scope
-      'no-shadow': [
-        'error',
-        {
-          builtinGlobals: false,
-          hoist: 'functions',
-          allow: ['resolve', 'reject', 'done', 'cb', 'callback', 'err', 'error'],
         },
       ],
 

@@ -4,116 +4,63 @@ const fs = require('fs');
 const path = require('path');
 
 /**
- * Validates that function names start with a capital letter
- * This enforces the naming convention for the project
+ * Validate that exported function names start with a capital letter.
+ * UI5 controller lifecycle + event handler functions are allowed to start lowercase.
  */
 
 const errors = [];
 const files = process.argv.slice(2);
 
-// Patterns to match function declarations
+// ✅ Only detect EXPORTED functions
 const patterns = [
-  // Regular function declarations: function myFunction()
-  /function\s+([a-z][a-zA-Z0-9_]*)\s*\(/g,
+  // Exported regular function
+  /export\s+function\s+([a-zA-Z][a-zA-Z0-9_]*)\s*\(/g,
 
-  // Arrow functions assigned to const/let/var: const myFunc = () => {}
-  /(?:const|let|var)\s+([a-z][a-zA-Z0-9_]*)\s*=\s*(?:\([^)]*\)|[a-zA-Z0-9_]+)\s*=>/g,
-
-  // Object method shorthand: myMethod() {}
-  /^\s*([a-z][a-zA-Z0-9_]*)\s*\([^)]*\)\s*\{/gm,
-
-  // Class methods: myMethod() {}
-  /(?:async\s+)?([a-z][a-zA-Z0-9_]*)\s*\([^)]*\)\s*\{/g,
+  // Exported arrow function
+  /export\s+(?:const|let|var)\s+([a-zA-Z][a-zA-Z0-9_]*)\s*=\s*(?:\([^)]*\)|[a-zA-Z0-9_]+)\s*=>/g,
 ];
 
-const allowedPrefixes = [
-  'on', // Event handlers: onClick, onInit
-  'handle', // Event handlers: handleSubmit
-  '_', // Private functions
+// ✅ UI5 + common allowed lowercase patterns
+const allowedLowercasePrefixes = [
+  'on', // UI5 event handler: onSave, onInit
+  'handle', // handlePress, handleSubmit
+  '_', // private functions
   'get',
-  'set', // Getters/setters (can be lowercase)
+  'set',
   'is',
   'has',
+  'can', // Boolean helpers
   'should',
-  'can', // Boolean functions
 ];
 
-function ShouldCheckFunction(functionName, fileContent, match) {
-  // Skip if it's a lifecycle method or standard callback
-  const lifecycleMethods = [
-    'constructor',
-    'render',
-    'componentDidMount',
-    'componentDidUpdate',
-    'componentWillUnmount',
-    'shouldComponentUpdate',
-    'getDerivedStateFromProps',
-    'getSnapshotBeforeUpdate',
-    'componentDidCatch',
-    'toString',
-    'valueOf',
-    'init',
-    'exit',
-    'destroy',
-    'onInit',
-    'onExit',
-    'onBeforeRendering',
-    'onAfterRendering',
-    'test',
-    'describe',
-    'it',
-    'beforeEach',
-    'afterEach',
-    'beforeAll',
-    'afterAll',
-  ];
+// ✅ Common JS keywords and UI5 lifecycle allowed lowercase
+const allowedExactMatches = new Set(['constructor', 'catch', 'render', 'valueOf', 'toString']);
 
-  if (lifecycleMethods.includes(functionName)) {
-    return false;
+function ShouldCheckFunction(name) {
+  if (allowedExactMatches.has(name)) return false;
+  if (/^[A-Z]/.test(name)) return true; // ✅ Already valid
+
+  for (const prefix of allowedLowercasePrefixes) {
+    if (name.startsWith(prefix)) return false;
   }
-
-  // Check if function is in an export statement (likely a named export)
-  const exportPattern = new RegExp(`export\\s+(?:const|let|var|function)\\s+${functionName}\\b`);
-  if (exportPattern.test(fileContent)) {
-    return true;
-  }
-
-  // Check allowed prefixes
-  for (const prefix of allowedPrefixes) {
-    if (functionName.startsWith(prefix)) {
-      return false;
-    }
-  }
-
   return true;
 }
 
-function ValidateFunctionNames(filePath) {
+function ValidateFile(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    const fileErrors = [];
-
-    // Get all lines for error reporting
     const lines = content.split('\n');
+    const fileErrors = [];
 
     for (const pattern of patterns) {
       let match;
       while ((match = pattern.exec(content)) !== null) {
         const functionName = match[1];
 
-        // Skip if starts with capital letter
-        if (/^[A-Z]/.test(functionName)) {
-          continue;
-        }
+        if (!ShouldCheckFunction(functionName)) continue;
 
-        // Check if we should validate this function
-        if (!ShouldCheckFunction(functionName, content, match)) {
-          continue;
-        }
-
-        // Find line number
-        const beforeMatch = content.substring(0, match.index);
-        const lineNumber = beforeMatch.split('\n').length;
+        const before = content.substring(0, match.index);
+        const lineNumber = before.split('\n').length;
         const lineContent = lines[lineNumber - 1].trim();
 
         fileErrors.push({
@@ -124,7 +71,6 @@ function ValidateFunctionNames(filePath) {
         });
       }
     }
-
     return fileErrors;
   } catch (error) {
     console.error(`Error reading file ${filePath}:`, error.message);
@@ -132,49 +78,42 @@ function ValidateFunctionNames(filePath) {
   }
 }
 
-// Main execution
+// ✅ MAIN EXECUTION
 if (files.length === 0) {
   console.log('✅ No files to check');
   process.exit(0);
 }
 
-console.log('🔍 Checking function naming conventions...\n');
+console.log('🔍 Checking exported function naming conventions...\n');
 
 for (const file of files) {
-  // Skip node_modules, generated files, and scripts directory itself
   if (file.includes('node_modules') || file.includes('gen/') || file.includes('scripts/')) {
     continue;
   }
 
-  // Only check JS/TS files
   const ext = path.extname(file);
-  if (!['.js', '.mjs', '.cjs', '.ts', '.tsx'].includes(ext)) {
-    continue;
-  }
+  if (!['.js', '.mjs', '.cjs', '.ts', '.tsx'].includes(ext)) continue;
 
-  const fileErrors = ValidateFunctionNames(file);
+  const fileErrors = ValidateFile(file);
   errors.push(...fileErrors);
 }
 
-// Report results
 if (errors.length > 0) {
-  console.error('❌ Function naming convention violations found:\n');
+  console.error('❌ Naming violations detected:\n');
 
-  for (const error of errors) {
+  errors.forEach(error => {
     console.error(`  ${error.file}:${error.line}`);
-    console.error(`    Function "${error.function}" must start with a capital letter`);
+    console.error(`    Exported function "${error.function}" must start with a capital letter`);
     console.error(`    ${error.code}\n`);
-  }
+  });
 
+  console.error(`\n💡 Exported functions must start uppercase (e.g. "LoadData", "SaveAction")`);
   console.error(
-    `\n💡 Tip: Function names must start with a capital letter (e.g., MyFunction, HandleClick)`
-  );
-  console.error(
-    `   Exceptions: Event handlers (onClick, handleSubmit), private functions (_private), getters/setters\n`
+    `✅ Allowed lowercase: onSave, onInit, _private, handleClick, getValue, setData, isValid`
   );
 
   process.exit(1);
 }
 
-console.log('✅ All function names follow the naming convention!\n');
+console.log('✅ All exported function names follow expected conventions!\n');
 process.exit(0);

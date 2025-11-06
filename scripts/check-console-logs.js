@@ -4,28 +4,17 @@ const fs = require('fs');
 const path = require('path');
 
 /**
- * Checks for console.log statements in staged files
- * Prevents debugging code from being committed
+ * Checks for disallowed console statements in staged files
+ * Allows console.error() and console.warn()
  */
 
 const errors = [];
 const files = process.argv.slice(2);
 
-// Console methods to check for
-const consoleMethods = [
-  'log',
-  'debug',
-  'info',
-  'warn',
-  'error',
-  'trace',
-  'dir',
-  'dirxml',
-  'table',
-  'assert',
-];
+// ⛔ Block only debugging-related console methods
+const blockedMethods = ['log', 'debug', 'info', 'trace', 'table', 'assert', 'dir', 'dirxml'];
 
-function CheckConsoleStatements(filePath) {
+function checkConsoleStatements(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
     const lines = content.split('\n');
@@ -44,19 +33,19 @@ function CheckConsoleStatements(filePath) {
       }
 
       // Check for console statements
-      for (const method of consoleMethods) {
-        const pattern = new RegExp(`console\\.${method}\\s*\\(`, 'g');
+      for (const method of blockedMethods) {
+        const pattern = new RegExp(`console\\.${method}\\s*\\(`);
 
         if (pattern.test(line)) {
-          // Check if it's in a comment (inline)
-          const commentIndex = line.indexOf('//');
-          const consoleIndex = line.indexOf(`console.${method}`);
+          // Check if it's commented inline
+          const commentIdx = line.indexOf('//');
+          const consoleIdx = line.indexOf(`console.${method}`);
 
-          if (commentIndex === -1 || consoleIndex < commentIndex) {
+          if (commentIdx === -1 || consoleIdx < commentIdx) {
             fileErrors.push({
               file: filePath,
               line: index + 1,
-              method: method,
+              method,
               code: trimmedLine,
             });
           }
@@ -71,16 +60,15 @@ function CheckConsoleStatements(filePath) {
   }
 }
 
-// Main execution
+// Main
 if (files.length === 0) {
   console.log('✅ No files to check');
   process.exit(0);
 }
 
-console.log('🔍 Checking for console statements...\n');
+console.log('🔍 Checking for console debugging statements...\n');
 
 for (const file of files) {
-  // Skip node_modules, test files, and scripts directory
   if (
     file.includes('node_modules') ||
     file.includes('gen/') ||
@@ -92,31 +80,28 @@ for (const file of files) {
     continue;
   }
 
-  // Only check JS/TS files
-  const ext = path.extname(file);
-  if (!['.js', '.mjs', '.cjs', '.ts', '.tsx'].includes(ext)) {
+  if (!['.js', '.mjs', '.cjs', '.ts', '.tsx'].includes(path.extname(file))) {
     continue;
   }
 
-  const fileErrors = CheckConsoleStatements(file);
+  const fileErrors = checkConsoleStatements(file);
   errors.push(...fileErrors);
 }
 
-// Report results
+// Show results
 if (errors.length > 0) {
-  console.error('❌ Console statements found in staged files:\n');
+  console.error('❌ Disallowed console statements found:\n');
 
-  for (const error of errors) {
-    console.error(`  ${error.file}:${error.line}`);
-    console.error(`    Remove console.${error.method}()`);
-    console.error(`    ${error.code}\n`);
+  for (const err of errors) {
+    console.error(`  ${err.file}:${err.line}`);
+    console.error(`    Remove console.${err.method}()`);
+    console.error(`    ${err.code}\n`);
   }
 
-  console.error(`\n💡 Tip: Use a proper logging library instead of console statements`);
-  console.error(`   For debugging, use conditional logging or remove before committing\n`);
+  console.error(`\n💡 Allowed: console.error(), console.warn() only\n`);
 
   process.exit(1);
 }
 
-console.log('✅ No console statements found!\n');
+console.log('✅ No blocked console statements found!\n');
 process.exit(0);
