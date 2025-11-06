@@ -3,7 +3,7 @@
 echo "🚀 Running pre-commit checks..."
 echo ""
 
-# 1. Check branch protection first
+# 1. Branch protection
 echo "🔒 Validating branch..."
 node scripts/validate-branch.js
 if [ $? -ne 0 ]; then
@@ -11,7 +11,16 @@ if [ $? -ne 0 ]; then
 fi
 echo ""
 
-# 2. Run lint-staged for code quality
+# 2. Run tests on staged changes
+echo "🧪 Running tests..."
+node scripts/run-tests.js
+if [ $? -ne 0 ]; then
+  exit 1
+fi
+echo ""
+
+# 3. Code quality checks
+echo "🔍 Running code quality checks..."
 npx lint-staged
 
 if [ $? -ne 0 ]; then
