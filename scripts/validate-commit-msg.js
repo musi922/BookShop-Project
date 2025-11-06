@@ -2,12 +2,6 @@
 
 const fs = require('fs');
 
-/**
- * Validates commit messages follow Conventional Commits format
- * Format: <type>(<scope>): <subject>
- * Example: feat(auth): add login functionality
- */
-
 // Read the commit message from the file Git provides
 const commitMsgFile = process.argv[2];
 const commitMsg = fs.readFileSync(commitMsgFile, 'utf-8').trim();
