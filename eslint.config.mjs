@@ -64,7 +64,7 @@ export default [
       'no-console': [
         'error',
         {
-          allow: [], // No console methods allowed
+          allow: ['warn', 'error'],
         },
       ],
 
