@@ -40,7 +40,7 @@ POST http://localhost:4004/odata/v2/study/Notifications
 Content-Type: application/json
 
 {
-  "title": " Notificatin",
+  "title": " Test",
   "message": "This is a test notification message",
   "type": "info",
   "priority": "normal",
