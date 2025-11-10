@@ -50,7 +50,7 @@ jobs:
 
       - name: Install MultiApps CF CLI Plugin
         run: |
-          cf install-plugin -r CF-Community "multiapps"
+          cf install-plugin -r CF-Community "multiapps" -f
 
       - name: Verify CF CLI Installation
         run: |
