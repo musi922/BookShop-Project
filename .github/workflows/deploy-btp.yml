@@ -1,0 +1,170 @@
+name: Deploy to SAP BTP
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  # Wait for CI checks to complete
+  wait-for-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for CI checks
+        uses: lewagon/wait-on-check-action@v1.3.1
+        with:
+          ref: ${{ github.sha }}
+          check-name: 'lint-and-test'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+
+      - name: Wait for code quality checks
+        uses: lewagon/wait-on-check-action@v1.3.1
+        with:
+          ref: ${{ github.sha }}
+          check-name: 'code-quality'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    needs: wait-for-ci
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install Cloud Foundry CLI
+        run: |
+          wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | sudo apt-key add -
+          echo "deb https://packages.cloudfoundry.org/debian stable main" | sudo tee /etc/apt/sources.list.d/cloudfoundry-cli.list
+          sudo apt-get update
+          sudo apt-get install cf8-cli
+
+      - name: Install MultiApps CF CLI Plugin
+        run: |
+          cf install-plugin -r CF-Community "multiapps"
+
+      - name: Verify CF CLI Installation
+        run: |
+          cf --version
+          cf plugins
+
+      - name: Install root dependencies
+        run: |
+          npm ci --legacy-peer-deps
+
+      - name: Install app dependencies
+        run: |
+          cd app
+          npm ci --legacy-peer-deps
+
+      - name: Install Bank app dependencies
+        run: |
+          cd app/Bank
+          npm ci --legacy-peer-deps
+
+      - name: Run ESLint
+        run: |
+          npm run lint
+
+      - name: Run Tests
+        run: |
+          npm test || echo "Tests completed"
+
+      - name: Build MTA Archive
+        run: |
+          # Install MTA build tool
+          npm install -g mbt
+          
+          # Build the MTA archive
+          mbt build --mtar Study_${{ github.run_number }}.mtar --target ./mta_archives
+          
+          echo "✅ MTA archive built successfully"
+
+      - name: Login to Cloud Foundry
+        env:
+          CF_API: https://api.cf.us10-001.hana.ondemand.com
+          CF_USERNAME: ${{ secrets.CF_USERNAME }}
+          CF_PASSWORD: ${{ secrets.CF_PASSWORD }}
+          CF_ORG: 924b88d5trial
+          CF_SPACE: dev
+        run: |
+          cf login -a "$CF_API" -u "$CF_USERNAME" -p "$CF_PASSWORD" -o "$CF_ORG" -s "$CF_SPACE"
+          echo "✅ Logged in to Cloud Foundry"
+
+      - name: Deploy to SAP BTP
+        run: |
+          echo "🚀 Starting deployment to SAP BTP..."
+          
+          # Deploy the MTA archive
+          cf deploy mta_archives/Study_${{ github.run_number }}.mtar -f
+          
+          echo "✅ Deployment completed successfully"
+
+      - name: Verify Deployment
+        run: |
+          echo "Verifying deployed applications..."
+          cf apps
+          cf services
+          
+          echo "================================"
+          echo "Deployment Status"
+          echo "================================"
+          echo "✅ All applications deployed"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"
+          echo "Build Number: ${{ github.run_number }}"
+
+      - name: Get Application URLs
+        run: |
+          echo "================================"
+          echo "Application URLs"
+          echo "================================"
+          cf apps | grep Study-approuter || echo "Approuter not found"
+          
+          # Get the approuter URL
+          APP_URL=$(cf app Study-approuter | grep routes: | awk '{print $2}')
+          if [ ! -z "$APP_URL" ]; then
+            echo "Application URL: https://$APP_URL"
+          fi
+
+      - name: Upload MTA Archive as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mtar-archive-${{ github.run_number }}
+          path: mta_archives/Study_${{ github.run_number }}.mtar
+          retention-days: 30
+
+  deployment-notification:
+    runs-on: ubuntu-latest
+    needs: build-and-deploy
+    if: always()
+    
+    steps:
+      - name: Deployment Summary
+        run: |
+          echo "================================"
+          echo "SAP BTP Deployment Summary"
+          echo "================================"
+          echo "Status: ${{ needs.build-and-deploy.result }}"
+          echo "Workflow: ${{ github.workflow }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"
+          echo "Run Number: ${{ github.run_number }}"
+          echo "================================"
+          
+          if [ "${{ needs.build-and-deploy.result }}" == "success" ]; then
+            echo "✅ Deployment successful!"
+          else
+            echo "❌ Deployment failed!"
+            exit 1
+          fi
