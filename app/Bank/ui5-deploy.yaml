@@ -1,0 +1,24 @@
+specVersion: '3.1'
+metadata:
+  name: bank
+type: application
+framework:
+  name: SAPUI5
+  version: '1.120.0'
+  libraries:
+    - name: sap.m
+    - name: sap.ui.core
+    - name: sap.ui.layout
+resources:
+  configuration:
+    propertiesFileSourceEncoding: UTF-8
+builder:
+  resources:
+    excludes:
+      - '/test/**'
+  customTasks:
+    - name: ui5-task-zipper
+      afterTask: generateCachebusterInfo
+      configuration:
+        archiveName: Bank-app-content
+        includeDotFiles: false

@@ -9,6 +9,6 @@
     "@sap/approuter": "20.1.0"
   },
   "engines": {
-    "node": "^22.0.0"
+    "node": "^20.0.0"
   }
 }

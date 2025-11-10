@@ -1,15 +1,16 @@
 _schema-version: 3.3.0
 ID: Study
 version: 1.0.0
-description: "A simple CAP project."
+description: 'A simple CAP project.'
 parameters:
   enable-parallel-deployments: true
 build-parameters:
   before-all:
     - builder: custom
       commands:
-        - npm install
+        - npm install --ignore-scripts
         - npx cds build --production
+        - npm pkg delete scripts.prepare scripts.postinstall devDependencies.husky devDependencies.lint-staged --prefix gen/srv
 
 modules:
   - name: Study-srv
@@ -18,8 +19,13 @@ modules:
     parameters:
       instances: 1
       buildpack: nodejs_buildpack
+      memory: 512MB
+      disk-quota: 1024MB
     build-parameters:
-      builder: npm-ci
+      builder: npm
+      ignore:
+        - 'node_modules/'
+        - 'package-lock.json'
     provides:
       - name: srv-api
         properties:
@@ -33,6 +39,8 @@ modules:
     path: gen/db
     parameters:
       buildpack: nodejs_buildpack
+      memory: 256MB
+      disk-quota: 512MB
     requires:
       - name: Study-db
 
@@ -41,17 +49,15 @@ modules:
     path: approuter
     build-parameters:
       ignore:
-        - "default-env.json"
-        - ".cdsrc-private.json"
-        - "node_modules/"
-        - "package-lock.json"
-      builder: custom
-      commands:
-        []
+        - 'default-env.json'
+        - '.cdsrc-private.json'
+        - 'node_modules/'
+        - 'package-lock.json'
+      builder: npm-ci
     parameters:
       keep-existing-routes: true
-      disk-quota: 1024MB
-      memory: 1024MB
+      disk-quota: 512MB
+      memory: 512MB
     requires:
       - name: Study-auth
       - name: Study-html-repo-rt
@@ -60,7 +66,8 @@ modules:
         properties:
           forwardAuthToken: true
           strictSSL: false
-          url: "~{srv-url}"
+          name: srv-api
+          url: '~{srv-url}'
 
   - name: Study-app-deployer
     type: com.sap.application.content
@@ -76,23 +83,43 @@ modules:
             - Study-app-content.zip
           name: Study-app
           target-path: resources/
+        - artifacts:
+            - Bank-app-content.zip
+          name: Bank-app
+          target-path: resources/
 
   - name: Study-app
     type: html5
     path: app
     build-parameters:
       ignore:
-        - "default-env.json"
-        - ".cdsrc-private.json"
-        - "node_modules/"
-        - "package-lock.json"
+        - 'default-env.json'
+        - '.cdsrc-private.json'
+        - 'node_modules/'
+        - 'package-lock.json'
+        - 'Bank/'
       builder: custom
       build-result: dist
       commands:
         - npm install
         - npm run build
-      supported-platforms:
-        []
+      supported-platforms: []
+
+  - name: Bank-app
+    type: html5
+    path: app/Bank
+    build-parameters:
+      ignore:
+        - 'default-env.json'
+        - '.cdsrc-private.json'
+        - 'node_modules/'
+        - 'package-lock.json'
+      builder: custom
+      build-result: dist
+      commands:
+        - npm install
+        - npm run build
+      supported-platforms: []
 
 resources:
   - name: Study-auth
