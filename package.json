@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@cap-js-community/odata-v2-adapter": "^1.15.5",
-    "@cap-js/hana": "^2.3.4",
+    "@cap-js/hana": "^2",
     "@eslint-community/eslint-plugin-eslint-comments": "^4.5.0",
     "@eslint/js": "^9.39.1",
     "@sap/cds": "^9.4.4",
@@ -66,8 +66,18 @@
   "cds": {
     "requires": {
       "db": {
-        "kind": "sqlite",
-        "impl": "@cap-js/sqlite"
+        "kind": "sql"
+      },
+      "[production]": {
+        "db": {
+          "kind": "hana"
+        }
+      },
+      "[development]": {
+        "db": {
+          "kind": "sqlite",
+          "impl": "@cap-js/sqlite"
+        }
       }
     }
   }
