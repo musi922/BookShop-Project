@@ -1,0 +1,131 @@
+<mvc:View
+    controllerName="com.bank.controller.Main"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    displayBlock="true"
+>
+    <Page
+        id="applicationsPage"
+        title="Funding Applications"
+        showNavButton="true"
+        navButtonPress="onNavBack"
+    >
+        <headerContent>
+            <Button
+                id="refreshButton"
+                icon="sap-icon://refresh"
+                tooltip="Refresh"
+                press="onRefresh"
+            />
+        </headerContent>
+
+        <subHeader>
+            <Toolbar>
+                <SearchField
+                    id="searchField"
+                    width="50%"
+                    placeholder="Search by applicant name, email, or program..."
+                    search="onSearch"
+                    liveChange="onSearch"
+                />
+            </Toolbar>
+        </subHeader>
+
+        <content>
+            <Table
+                 id="applicationsTable"
+                items="{/applications}"
+                mode="None"
+                itemPress="onItemPress"
+                
+            >
+                <headerToolbar>
+                    <OverflowToolbar>
+                        <Title text="Applications ({= ${/applications}.length })" level="H2"/>
+                        <ToolbarSpacer />
+                        <Button
+                            icon="sap-icon://excel-attachment"
+                            text="Export to Excel"
+                            press="onExportToExcel"
+                        />
+                    </OverflowToolbar>
+                </headerToolbar>
+
+                <columns>
+                    <Column width="12em">
+                        <Text text="Application ID" />
+                    </Column>
+                    <Column width="12em" minScreenWidth="Tablet" demandPopin="true">
+                        <Text text="Program" />
+                    </Column>
+                    <Column width="12em" minScreenWidth="Tablet" demandPopin="true">
+                        <Text text="Applicant Name" />
+                    </Column>
+                    <Column width="12em" minScreenWidth="Desktop" demandPopin="true">
+                        <Text text="Email" />
+                    </Column>
+                    <Column width="10em" minScreenWidth="Tablet" demandPopin="true" hAlign="Center">
+                        <Text text="Funding Amount" />
+                    </Column>
+                    <Column width="8em" hAlign="Center">
+                        <Text text="Status" />
+                    </Column>
+                    <Column width="10em" minScreenWidth="Desktop" demandPopin="true">
+                        <Text text="Submitted Date" />
+                    </Column>
+                    <Column width="8em" hAlign="Center">
+                        <Text text="Actions" />
+                    </Column>
+                </columns>
+
+                <items>
+                    <ColumnListItem type="Navigation">
+                        <cells>
+                            <ObjectIdentifier
+                                title="{ID}"
+                                text="{programId}"
+                            />
+                            <Text text="{programName}" />
+                            <Text text="{applicantName}" />
+                            <Text text="{applicantEmail}" />
+                            <ObjectNumber
+                                number="{fundingAmount}"
+                                unit="RWF"
+                            />
+                            <ObjectStatus
+                                text="{status}"
+                                state="{
+                                    path: 'status',
+                                    formatter: '.formatter.statusState'
+                                }"
+                            />
+                            <Text text="{
+                                path: 'submittedAt',
+                                type: 'sap.ui.model.type.DateTime',
+                                formatOptions: {
+                                    pattern: 'dd/MM/yyyy HH:mm'
+                                }
+                            }" />
+                            <HBox justifyContent="Center">
+                                <Button
+                                    icon="sap-icon://delete"
+                                    type="Transparent"
+                                    tooltip="Delete"
+                                    press="onDelete"
+                                />
+                            </HBox>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+
+        <footer>
+            <OverflowToolbar>
+                <ToolbarSpacer />
+                <Text text="Total: {/totalApplications} applications" />
+            </OverflowToolbar>
+        </footer>
+    </Page>
+</mvc:View>
