@@ -544,42 +544,6 @@ sap.ui.define(
         return aDocuments;
       },
 
-      _submitApplication: function (oData) {
-        sap.ui.core.BusyIndicator.show(0);
-
-        // Simulate API call
-        setTimeout(
-          function () {
-            sap.ui.core.BusyIndicator.hide();
-
-            let sReferenceNumber = 'FA-' + oData.program.programId.toUpperCase() + '-' + Date.now();
-            let sProcessingTime =
-              oData.program.processingTime.value + ' ' + oData.program.processingTime.unit;
-
-            MessageBox.success(
-              'Your application has been submitted successfully!\n\n' +
-                'Reference Number: ' +
-                sReferenceNumber +
-                '\n' +
-                'Program: ' +
-                oData.program.programName +
-                '\n' +
-                'Processing Time: ' +
-                sProcessingTime +
-                '\n\n' +
-                'You will receive a confirmation email shortly.',
-              {
-                title: 'Application Submitted',
-                onClose: function () {
-                  this._resetWizard();
-                }.bind(this),
-              }
-            );
-          }.bind(this),
-          2000
-        );
-      },
-
       _resetWizard: function () {
         let oWizard = this.byId('fundingWizard');
         let oModel = this.getView().getModel();
@@ -864,6 +828,182 @@ sap.ui.define(
         // Cleanup
         document.body.removeChild(link);
         window.URL.revokeObjectURL(link.href);
+      },
+
+      _submitApplication: function (oData) {
+        sap.ui.core.BusyIndicator.show(0);
+
+        // Prepare payload - everything as JSON
+        const payload = JSON.stringify({
+          program: oData.program,
+          applicant: oData.applicant,
+          project: oData.project,
+          submissionDate: new Date().toISOString(),
+        });
+
+        // Prepare documents list
+        const documents = oData.documents.map(doc => ({
+          type: doc.type,
+          fileName: doc.fileName,
+        }));
+
+        // Call CAP service - FIX THE URL
+        const requestData = {
+          programId: oData.program.programId,
+          programName: oData.program.programName,
+          payload: payload,
+          documents: documents,
+        };
+
+        // Change this URL to match your service path
+        fetch('/odata/v4/bank/submitApplication', {
+          // or '/bank/submitApplication'
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify(requestData),
+        })
+          .then(response => {
+            if (!response.ok) {
+              // Try to get error text first
+              return response.text().then(text => {
+                console.error('Error response:', text);
+                try {
+                  const err = JSON.parse(text);
+                  throw new Error(err.error?.message || text);
+                } catch (text) {
+                  console.error('Error response:', text);
+                }
+              });
+            }
+
+            // Check if response has content
+            return response.text().then(text => {
+              return text ? JSON.parse(text) : {};
+            });
+          })
+          .then(result => {
+            sap.ui.core.BusyIndicator.hide();
+
+            MessageBox.success(
+              'Your application has been submitted successfully!\n\n' +
+                'Application ID: ' +
+                result.applicationId +
+                '\n' +
+                'Status: ' +
+                result.status +
+                '\n\n' +
+                'You will receive a confirmation email shortly.',
+              {
+                title: 'Application Submitted',
+                onClose: function () {
+                  this._resetWizard();
+                }.bind(this),
+              }
+            );
+          })
+          .catch(error => {
+            sap.ui.core.BusyIndicator.hide();
+            console.error('Submission error:', error);
+            MessageBox.error(
+              'Failed to submit application.\n\n' +
+                'Error: ' +
+                error.message +
+                '\n\n' +
+                'Please try again or contact support.',
+              { title: 'Submission Failed' }
+            );
+          });
+      },
+
+      // Check application status by ID
+      checkApplicationStatus: function (applicationId) {
+        sap.ui.core.BusyIndicator.show(0);
+
+        fetch(`/odata/v4/bank/getApplicationById(applicationId=${applicationId})`, {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+          },
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Application not found');
+            }
+            return response.json();
+          })
+          .then(result => {
+            sap.ui.core.BusyIndicator.hide();
+
+            const application = result.value || result;
+
+            // Parse payload to show details
+            const formData = JSON.parse(application.payload);
+
+            MessageBox.information(
+              'Application Status: ' +
+                application.status +
+                '\n' +
+                'Submitted: ' +
+                new Date(application.submittedAt).toLocaleString() +
+                '\n' +
+                'Program: ' +
+                application.programName +
+                '\n' +
+                'Applicant: ' +
+                formData.applicant.fullName,
+              { title: 'Application Details' }
+            );
+          })
+          .catch(error => {
+            sap.ui.core.BusyIndicator.hide();
+            MessageBox.error('Application not found: ' + error.message);
+          });
+      },
+
+      // Get user's applications by email
+      getMyApplications: function (email) {
+        if (!email) {
+          MessageToast.show('Email is required');
+          return;
+        }
+
+        sap.ui.core.BusyIndicator.show(0);
+
+        fetch(`/odata/v4/bank/getMyApplications(email='${encodeURIComponent(email)}')`, {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+          },
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Failed to fetch applications');
+            }
+            return response.json();
+          })
+          .then(result => {
+            sap.ui.core.BusyIndicator.hide();
+
+            const applications = result.value || result;
+
+            if (!applications || applications.length === 0) {
+              MessageToast.show('No applications found for ' + email);
+              return;
+            }
+            MessageToast.show(`Found ${applications.length} application(s)`);
+
+            // Example: Store in model to display
+            const oModel = this.getView().getModel();
+            oModel.setProperty('/myApplications', applications);
+          })
+          .catch(error => {
+            sap.ui.core.BusyIndicator.hide();
+            console.error('Fetch error:', error);
+            MessageBox.error('Failed to fetch applications: ' + error.message);
+          });
       },
     });
   }
