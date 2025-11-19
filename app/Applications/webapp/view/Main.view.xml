@@ -109,10 +109,16 @@
                             }" />
                             <HBox justifyContent="Center">
                                 <Button
-                                    icon="sap-icon://delete"
+                                    icon="sap-icon://accept"
                                     type="Transparent"
-                                    tooltip="Delete"
-                                    press="onDelete"
+                                    tooltip="Approve"
+                                    press="onApprove"
+                                />
+                                <Button
+                                    icon="sap-icon://decline"
+                                    type="Transparent"
+                                    tooltip="Reject"
+                                    press="onReject"
                                 />
                             </HBox>
                         </cells>

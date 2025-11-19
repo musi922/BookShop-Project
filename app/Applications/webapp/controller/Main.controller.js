@@ -221,49 +221,6 @@ sap.ui.define(
         });
       },
 
-      onDelete: function (oEvent) {
-        const oButton = oEvent.getSource();
-        const oContext = oButton.getBindingContext();
-
-        if (!oContext) return;
-
-        const oData = oContext.getObject();
-
-        MessageBox.confirm(`Are you sure you want to delete application ${oData.ID}?`, {
-          title: 'Confirm Deletion',
-          onClose: function (sAction) {
-            if (sAction === MessageBox.Action.OK) {
-              this.deleteApplication(oData.ID);
-            }
-          }.bind(this),
-        });
-      },
-
-      deleteApplication: function (sApplicationId) {
-        sap.ui.core.BusyIndicator.show(0);
-
-        fetch(`/odata/v4/bank/FundingApplications(${sApplicationId})`, {
-          method: 'DELETE',
-          headers: {
-            Accept: 'application/json',
-          },
-        })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('Failed to delete application');
-            }
-
-            sap.ui.core.BusyIndicator.hide();
-            MessageToast.show('Application deleted successfully');
-            this.loadApplications(); // Reload the table
-          })
-          .catch(error => {
-            sap.ui.core.BusyIndicator.hide();
-            console.error('Delete error:', error);
-            MessageBox.error('Failed to delete application: ' + error.message);
-          });
-      },
-
       // ==================== EXPORT ====================
 
       onExportToExcel: function () {
@@ -364,6 +321,64 @@ sap.ui.define(
       onNavBack: function () {
         const oRouter = sap.ui.core.UIComponent.getRouterFor(this);
         oRouter.navTo('main'); // Navigate back to main view
+      },
+
+      onApprove: function (oEvent) {
+        const oContext = oEvent.getSource().getBindingContext();
+        if (!oContext) return;
+
+        const oData = oContext.getObject();
+
+        MessageBox.confirm(`Approve application ${oData.ID}?`, {
+          title: 'Approval',
+          onClose: action => {
+            if (action === MessageBox.Action.OK) {
+              this.updateStatus(oData.ID, 'APPROVED');
+            }
+          },
+        });
+      },
+
+      onReject: function (oEvent) {
+        const oContext = oEvent.getSource().getBindingContext();
+        if (!oContext) return;
+
+        const oData = oContext.getObject();
+
+        MessageBox.confirm(`Reject application ${oData.ID}?`, {
+          title: 'Rejection',
+          onClose: action => {
+            if (action === MessageBox.Action.OK) {
+              this.updateStatus(oData.ID, 'REJECTED');
+            }
+          },
+        });
+      },
+      updateStatus: function (sId, sStatus) {
+        sap.ui.core.BusyIndicator.show(0);
+
+        fetch(`/odata/v4/bank/FundingApplications(${sId})`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            status: sStatus,
+          }),
+        })
+          .then(response => {
+            if (!response.ok) throw new Error('Status update failed');
+            return response.json();
+          })
+          .then(() => {
+            sap.ui.core.BusyIndicator.hide();
+            MessageToast.show(`Application ${sStatus.toLowerCase()} successfully`);
+            this.loadApplications(); // reload table
+          })
+          .catch(error => {
+            sap.ui.core.BusyIndicator.hide();
+            MessageBox.error(error.message);
+          });
       },
     });
   }
