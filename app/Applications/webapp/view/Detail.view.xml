@@ -1,0 +1,205 @@
+<mvc:View
+    controllerName="com.bank.controller.Detail"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.ui.layout.form"
+    displayBlock="true"
+>
+    <Page
+        id="detailPage"
+        title="Application Details"
+        showNavButton="true"
+        navButtonPress="onNavBack"
+    >
+        <headerContent>
+            <Button
+                id="deleteButton"
+                icon="sap-icon://delete"
+                text="Delete"
+                press="onDelete"
+            />
+        </headerContent>
+
+        <content>
+            <ObjectHeader
+                id="applicationHeader"
+                title="{detailModel>/ID}"
+                number="{detailModel>/project/fundingAmount}"
+                numberUnit="RWF"
+            >
+                <attributes>
+                    <ObjectAttribute
+                        title="Status"
+                        text="{detailModel>/status}"
+                    />
+                    <ObjectAttribute
+                        title="Submitted"
+                        text="{
+                            path: 'detailModel>/submittedAt',
+                            type: 'sap.ui.model.type.DateTime',
+                            formatOptions: {
+                                pattern: 'dd/MM/yyyy HH:mm'
+                            }
+                        }"
+                    />
+                </attributes>
+                <statuses>
+                    <ObjectStatus
+                        text="{detailModel>/status}"
+                        state="{
+                            path: 'detailModel>/status',
+                            formatter: '.formatter.statusState'
+                        }"
+                    />
+                </statuses>
+            </ObjectHeader>
+
+            <IconTabBar
+                id="iconTabBar"
+                class="sapUiResponsiveContentPadding"
+            >
+                <items>
+                                    <!-- Project Details Tab -->
+                    <IconTabFilter
+                        id="projectTab"
+                        text="Project"
+                        key="project"
+                        icon="sap-icon://lightbulb"
+                    >
+                        <f:SimpleForm
+                            id="projectForm"
+                            editable="false"
+                            layout="ResponsiveGridLayout"
+                            labelSpanXL="4"
+                            labelSpanL="4"
+                            labelSpanM="4"
+                            labelSpanS="12"
+                            emptySpanXL="0"
+                            emptySpanL="0"
+                            emptySpanM="0"
+                            emptySpanS="0"
+                            columnsXL="2"
+                            columnsL="2"
+                            columnsM="1"
+                        >
+                            <f:content>
+                                <Label text="Project Title" />
+                                <Text text="{detailModel>/project/title}" />
+
+                                <Label text="Funding Amount" />
+                                <Text text="{detailModel>/project/fundingAmount} RWF" />
+
+                                <Label text="Duration" />
+                                <Text text="{detailModel>/project/duration} months" />
+
+                                <Label text="Category" />
+                                <Text text="{detailModel>/project/category}" />
+
+                                <Label text="Description" />
+                                <Text text="{detailModel>/project/description}" />
+                            </f:content>
+                        </f:SimpleForm>
+                    </IconTabFilter>
+                <!-- Program Information Tab -->
+
+                    <IconTabFilter
+                        id="programTab"
+                        text="Program"
+                        key="program"
+                        icon="sap-icon://project-definition-triangle"
+                    >
+                        <f:SimpleForm
+                            id="programForm"
+                            editable="false"
+                            layout="ResponsiveGridLayout"
+                            labelSpanXL="4"
+                            labelSpanL="4"
+                            labelSpanM="4"
+                            labelSpanS="12"
+                            emptySpanXL="0"
+                            emptySpanL="0"
+                            emptySpanM="0"
+                            emptySpanS="0"
+                            columnsXL="2"
+                            columnsL="2"
+                            columnsM="1"
+                        >
+                            <f:content>
+                                <Label text="Program Name" />
+                                <Text text="{detailModel>/programName}" />
+
+                                <Label text="Program ID" />
+                                <Text text="{detailModel>/programId}" />
+                            </f:content>
+                        </f:SimpleForm>
+                    </IconTabFilter>
+
+                    <!-- Applicant Information Tab -->
+                    <IconTabFilter
+                        id="applicantTab"
+                        text="Applicant"
+                        key="applicant"
+                        icon="sap-icon://person-placeholder"
+                    >
+                        <f:SimpleForm
+                            id="applicantForm"
+                            editable="false"
+                            layout="ResponsiveGridLayout"
+                            labelSpanXL="4"
+                            labelSpanL="4"
+                            labelSpanM="4"
+                            labelSpanS="12"
+                            emptySpanXL="0"
+                            emptySpanL="0"
+                            emptySpanM="0"
+                            emptySpanS="0"
+                            columnsXL="2"
+                            columnsL="2"
+                            columnsM="1"
+                        >
+                            <f:content>
+                                <Label text="Full Name" />
+                                <Text text="{detailModel>/applicant/fullName}" />
+
+                                <Label text="Email" />
+                                <Text text="{detailModel>/applicant/email}" />
+
+                                <Label text="Phone" />
+                                <Text text="{detailModel>/applicant/phone}" />
+
+                                <Label text="Address" />
+                                <Text text="{detailModel>/applicant/address}" />
+
+                                <Label text="City" />
+                                <Text text="{detailModel>/applicant/city}" />
+                            </f:content>
+                        </f:SimpleForm>
+                    </IconTabFilter>
+
+                    <!-- Documents Tab -->
+                    <IconTabFilter
+                        id="documentsTab"
+                        text="Documents"
+                        key="documents"
+                        icon="sap-icon://document"
+                        count="{= ${detailModel>/documents}.length }"
+                    >
+                        <List
+                            id="documentsList"
+                            items="{detailModel>/documents}"
+                            noDataText="No documents available"
+                        >
+                            <StandardListItem
+                                title="{detailModel>fileName}"
+                                description="{detailModel>documentType}"
+                                icon="sap-icon://document"
+                                type="Active"
+                                press="onDocumentPress"
+                            />
+                        </List>
+                    </IconTabFilter>
+                </items>
+            </IconTabBar>
+        </content>
+    </Page>
+</mvc:View>

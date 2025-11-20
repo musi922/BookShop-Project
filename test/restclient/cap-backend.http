@@ -57,3 +57,8 @@ Content-Type: application/json
 ### Get unread notification count (Custom function)
 GET http://localhost:4004/odata/v2/study/getUnreadNotificationCount
 Accept: application/json
+
+
+### Get unread notification count (Custom function)
+GET http://localhost:4004/odata/v4/bank/FundingApplications
+Accept: application/json
